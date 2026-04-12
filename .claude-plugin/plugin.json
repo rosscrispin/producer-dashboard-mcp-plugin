@@ -1,0 +1,13 @@
+{
+  "name": "producer-dashboard",
+  "version": "1.0.0",
+  "description": "Connect Claude Code to your Producer Dashboard account — manage songs, collaborators, tags, comments, todos, and share pages via 44 MCP tools.",
+  "author": {
+    "name": "Glimbr Pty Ltd",
+    "url": "https://producerdashboard.app"
+  },
+  "homepage": "https://producerdashboard.app",
+  "license": "MIT",
+  "keywords": ["producer-dashboard", "mcp", "music-production", "collaboration"],
+  "mcpServers": "./.mcp.json"
+}

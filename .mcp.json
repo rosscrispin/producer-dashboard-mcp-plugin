@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "producer-dashboard": {
+      "type": "http",
+      "url": "https://mcp.producerdashboard.app/mcp"
+    }
+  }
+}
