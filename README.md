@@ -13,7 +13,7 @@ Connect Claude Code to your [Producer Dashboard](https://producerdashboard.app) 
 Run these two commands inside Claude Code:
 
 ```
-/plugin marketplace add glimbr/producer-dashboard-mcp-plugin
+/plugin marketplace add rosscrispin/producer-dashboard-mcp-plugin
 /plugin install producer-dashboard@glimbr
 ```
 
@@ -28,7 +28,7 @@ Or pre-configure it for a project by adding this to `.claude/settings.json`:
     "glimbr": {
       "source": {
         "source": "github",
-        "repo": "glimbr/producer-dashboard-mcp-plugin"
+        "repo": "rosscrispin/producer-dashboard-mcp-plugin"
       }
     }
   }

@@ -55,7 +55,7 @@ Ask Claude to organize your catalog, update stages, manage collaborators, and cr
 
 Command 1 (copy button):
 ```
-/plugin marketplace add glimbr/producer-dashboard-mcp-plugin
+/plugin marketplace add rosscrispin/producer-dashboard-mcp-plugin
 ```
 
 Command 2 (copy button):
@@ -127,7 +127,7 @@ Enable **Destructive Operations** below. Off by default for safety.
 **"I installed the plugin but Claude doesn't know about my songs"**
 Restart Claude Code after installing. If that doesn't work, check that `Read Library` is enabled below.
 
-[Link text]: **Full documentation** → `https://github.com/glimbr/producer-dashboard-mcp-plugin`
+[Link text]: **Full documentation** → `https://github.com/rosscrispin/producer-dashboard-mcp-plugin`
 
 ---
 
@@ -164,7 +164,7 @@ This anchors the existing toggles to the new install flow so users understand wh
 
 ### Content not to ship yet
 - Claude Desktop / Cursor setup instructions for the "Other AI tools" section assume the MCP server works with any OAuth-capable MCP client. Verify before claiming "Works with Cursor, Continue" — those clients' MCP support is evolving. Safe baseline: claim Claude Code + Claude Desktop only, mention "other MCP clients" without naming them.
-- The "Full documentation" link assumes a public GitHub repo at `glimbr/producer-dashboard-mcp-plugin`. Update if the repo lives elsewhere.
+- If the repo later moves under a `glimbr` GitHub org, update the "Full documentation" link and the install command in the copy-button block.
 
 ### Copy principles
 - **Imperative voice** for steps ("Install", "Paste", "Sign in"), descriptive voice for context.
