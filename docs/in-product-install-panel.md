@@ -64,7 +64,7 @@ Command 2 (copy button):
 ```
 
 ### Step 3
-**Sign in** when Claude Code opens your browser. You'll be back in a few seconds, and the 44 Producer Dashboard tools will become available automatically.
+**Sign in** when Claude Code opens your browser. You'll be back in a few seconds, and the 47 Producer Dashboard tools will become available automatically.
 
 ### Connection status (dynamic)
 - **Not connected:** "No connection yet. Complete the steps above, then come back and reload this page."
@@ -164,7 +164,6 @@ This anchors the existing toggles to the new install flow so users understand wh
 
 ### Content not to ship yet
 - Claude Desktop / Cursor setup instructions for the "Other AI tools" section assume the MCP server works with any OAuth-capable MCP client. Verify before claiming "Works with Cursor, Continue" — those clients' MCP support is evolving. Safe baseline: claim Claude Code + Claude Desktop only, mention "other MCP clients" without naming them.
-- If the repo later moves under a `glimbr` GitHub org, update the "Full documentation" link and the install command in the copy-button block.
 
 ### Copy principles
 - **Imperative voice** for steps ("Install", "Paste", "Sign in"), descriptive voice for context.

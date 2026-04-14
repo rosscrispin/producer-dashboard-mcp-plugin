@@ -1,12 +1,12 @@
 ---
 name: producer-dashboard
-description: Producer Dashboard MCP — 44 tools for managing songs, collaborators, tags, buckets, comments, todos, and share pages. Use when the user mentions music production, songs, tracks, stages, collaborators, or sharing.
+description: Producer Dashboard MCP — 47 tools for managing songs, collaborators, tags, buckets, comments, todos, and share pages. Use when the user mentions music production, songs, tracks, stages, collaborators, or sharing.
 ---
 
 # Producer Dashboard MCP
 
 ## Overview
-The Producer Dashboard MCP connects Claude to a music production management app. It provides 44 tools across songs, collaborators, tags, buckets, comments, todos, sharing, and search. Use these to help producers manage their library, track progress, and collaborate.
+The Producer Dashboard MCP connects Claude to a music production management app. It provides 47 tools across songs, collaborators, tags, buckets, comments, todos, sharing, and search. Use these to help producers manage their library, track progress, and collaborate.
 
 ## When to Use
 When the user mentions songs, tracks, music production, stages, buckets, collaborators, comments, sharing, or any music workflow management task.
@@ -140,7 +140,7 @@ create_share_page(bucket_id="<uuid>", title="Test 4 Collection")
 6. Synthesize into a dashboard summary
 ```
 
-## Tool Reference (44 tools)
+## Tool Reference (47 tools)
 
 ### Songs (5)
 - `list_songs` — filter by stages, workflow, tags, excitement, bucket, search. Default 20 results.
@@ -165,7 +165,7 @@ create_share_page(bucket_id="<uuid>", title="Test 4 Collection")
 - `create_tag` — new tag with name, category, color
 - `delete_tag` — remove tag from system
 
-### Collaborators (11)
+### Collaborators (12)
 - `list_collaborators` — all global collaborators
 - `lookup_collaborator` — find by email (includes publisher info)
 - `get_song_collaborators` — collaborators on specific songs with splits

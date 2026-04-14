@@ -4,7 +4,7 @@ Connect Claude Code to your [Producer Dashboard](https://producerdashboard.app) 
 
 ## What You Get
 
-- **44 MCP tools** — full CRUD for songs, collaborators, buckets, tags, comments, todos, sharing
+- **47 MCP tools** — full CRUD for songs, collaborators, buckets, tags, comments, todos, sharing
 - **Domain knowledge** — Claude understands production stages, workflow states, split percentages, and music terminology
 - **Multi-step workflows** — ask complex questions like "show me comments on my finished tracks from last week" and Claude composes the right tool calls automatically
 

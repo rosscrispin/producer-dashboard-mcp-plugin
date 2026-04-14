@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "producer-dashboard",
-      "description": "Connect Claude Code to your Producer Dashboard account — manage songs, collaborators, tags, comments, todos, and share pages via 44 MCP tools.",
+      "description": "Connect Claude Code to your Producer Dashboard account — manage songs, collaborators, tags, comments, todos, and share pages via 47 MCP tools.",
       "version": "1.0.0",
       "author": {
         "name": "Glimbr Pty Ltd",
