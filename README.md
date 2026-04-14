@@ -10,12 +10,14 @@ Connect Claude Code to your [Producer Dashboard](https://producerdashboard.app) 
 
 ## Install
 
-```bash
-# From GitHub
-claude plugin install producer-dashboard@github:glimbr/producer-dashboard-mcp-plugin
+Run these two commands inside Claude Code:
+
+```
+/plugin marketplace add glimbr/producer-dashboard-mcp-plugin
+/plugin install producer-dashboard@glimbr
 ```
 
-Or add to your project's `.claude/settings.json`:
+Or pre-configure it for a project by adding this to `.claude/settings.json`:
 
 ```json
 {
