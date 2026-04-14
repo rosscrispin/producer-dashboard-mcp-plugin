@@ -1,0 +1,25 @@
+{
+  "name": "producer-dashboard",
+  "owner": {
+    "name": "Glimbr Pty Ltd",
+    "url": "https://producerdashboard.app"
+  },
+  "metadata": {
+    "description": "Producer Dashboard plugin for Claude Code — manage songs, collaborators, tags, comments, todos, and share pages.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "producer-dashboard",
+      "description": "Connect Claude Code to your Producer Dashboard account — manage songs, collaborators, tags, comments, todos, and share pages via 44 MCP tools.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Glimbr Pty Ltd",
+        "url": "https://producerdashboard.app"
+      },
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://producerdashboard.app"
+    }
+  ]
+}
