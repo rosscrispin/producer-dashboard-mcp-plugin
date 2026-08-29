@@ -78,10 +78,18 @@ Example: "Have there been any new comments on my latest album in the past few da
 ```text
 1. list_buckets -> find the album bucket by name
 2. list_songs(bucket_id=<id>, limit=50) -> get song IDs in that bucket
-3. list_comments(since="<recent>", limit=50) or search_comments(...) -> get recent comments
-4. Cross-reference recent comments with song IDs from step 2
-5. Summarize by song and count
+3. search_song_activity(candidate_track_group_ids=[...], comment_activity="has", comment_since="...", comment_before="...")
+4. Summarize the returned song IDs and bounded activity summaries
 ```
+
+Use `search_song_activity` for To-Do or comment presence and absence queries. Do not infer absence from `list_songs`, `list_todos`, `list_comments`, or other paginated list tools.
+
+- `todo_state="no_open"` includes a song that has zero Track To-Dos.
+- `todo_state="all_complete"` requires at least one Track To-Do and no open Track To-Dos.
+- `todo_state="never"` means that the song has never had a Track To-Do.
+- `comment_activity="none"` means that no comment matches the selected period and detail filters.
+- `comment_activity="never"` means that the song has no comment history.
+- Use exact UTC boundaries for a comment period. Use stable user IDs for a specific author.
 
 ### Organize And Categorize
 Example: "Put all the latest releases in a bucket for easy access"
@@ -231,6 +239,7 @@ Example: "Give me a full overview of my library"
 
 ### Search
 - `search_comments`
+- `search_song_activity`
 
 ## Response Formatting Rules
 1. Summarize results in natural language instead of dumping raw JSON.

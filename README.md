@@ -17,6 +17,8 @@ On first use, Claude Code will open your browser to sign in with your Producer D
 
 - "How many songs do I have in each stage?"
 - "Show me comments on my finished tracks from last week"
+- "Find tracks with no open to-dos"
+- "Show tracks with no comments in the past three days"
 - "Add Joshua as a collaborator on all my tree-stage songs with 50/50 splits"
 - "Create a share page for everything in my Releases bucket"
 - "What songs need mixing? Set their due date to end of month"
