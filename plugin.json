@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "producer-dashboard",
+  "version": "1.0.1",
+  "description": "Connect The Library to Codex and ChatGPT for authorized music library workflows.",
+  "author": {
+    "name": "Glimbr Pty Ltd",
+    "url": "https://thelibrary.fm"
+  },
+  "homepage": "https://thelibrary.fm",
+  "license": "MIT",
+  "keywords": ["the-library", "mcp", "music-production", "collaboration"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "The Library",
+        "shortDescription": "Work with your music library in Codex and ChatGPT.",
+        "longDescription": "Find tracks and manage approved music workflows through your The Library account.",
+        "developerName": "Glimbr Pty Ltd",
+        "category": "Productivity",
+        "capabilities": ["Read", "Write"],
+        "websiteURL": "https://thelibrary.fm"
+      }
+    }
+  }
+}

@@ -1,8 +1,19 @@
-# Producer Dashboard Plugin for Claude Code
+# The Library Plugin for Codex and Claude Code
 
-Ask Claude to manage your [Producer Dashboard](https://producerdashboard.app) catalog — update stages, organize collaborators, create share pages, and more.
+Use your [The Library](https://thelibrary.fm) account to find tracks and manage approved music workflows.
 
-## Install
+## Codex local install
+
+Add this repository as a marketplace, then install the plugin:
+
+```sh
+codex plugin marketplace add rosscrispin/producer-dashboard-mcp-plugin
+codex plugin add producer-dashboard@glimbr
+```
+
+The Codex package uses `plugin.json` and `mcp.json`. Sign in to the remote MCP server when Codex asks. For a read-only test, run `codex mcp login the-library --scopes library.read` and approve that scope in The Library.
+
+## Claude Code install
 
 Run these two commands inside Claude Code:
 
@@ -11,7 +22,7 @@ Run these two commands inside Claude Code:
 /plugin install producer-dashboard@glimbr
 ```
 
-On first use, Claude Code will open your browser to sign in with your Producer Dashboard account.
+On first use, Claude Code will open your browser to sign in with your The Library account.
 
 ## What you can ask
 
