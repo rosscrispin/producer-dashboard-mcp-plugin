@@ -5,16 +5,17 @@ This checklist prepares a local review run for the remote The Library MCP server
 ## Before the review
 
 1. Confirm that the MCP endpoint is publicly reachable over HTTPS at `https://mcp.thelibrary.fm/mcp`.
-2. Use a dedicated live The Library reviewer account. Do not use a personal account or an account containing private customer material.
-3. Confirm that the account has a small, disposable library with at least:
+2. Complete the OpenAI domain-verification challenge before submission. In the OpenAI submission dashboard, obtain the exact challenge token and publish it at `https://mcp.thelibrary.fm/.well-known/openai-apps-challenge` as required by the [OpenAI submission requirements](https://developers.openai.com/plugins/deploy/submission). Verify the challenge from the dashboard before continuing. Do not commit the token to this repository.
+3. Use a dedicated live The Library reviewer account. It must be accessible without MFA, email or SMS verification, magic-link sign-in, or a private-network connection. Do not use a personal account or an account containing private customer material. These access conditions follow the [OpenAI remote MCP review requirements](https://developers.openai.com/plugins/deploy/app-review).
+4. Confirm that the account has a small, disposable library with at least:
    - one track in the `tree` stage;
    - one finished track;
    - one bucket named `Releases`;
    - one collaborator, comment, and to-do if those workflows are being demonstrated.
-4. Enable only the permissions needed for the case being run. The read cases need `read_library`. The stage update needs `edit_songs`. The share-page case needs `sharing`. The split-sheet case needs `export_data`.
-5. Connect Dropbox for the share-page case. The share-page workflow requires both the connection and the `sharing` permission.
-6. Confirm that the OAuth consent page identifies The Library and that the authorization dialog uses the same product styling as the normal sign-in dialog.
-7. Reconnect after server metadata or authentication changes. A client refresh is required before checking updated tool names, descriptions, schemas, annotations, or auth behavior.
+5. Enable only the permissions needed for the case being run. The read cases need `read_library`. The stage update needs `edit_songs`. The share-page case needs `sharing`. The split-sheet case needs `export_data`.
+6. Connect Dropbox for the share-page case. The share-page workflow requires both the connection and the `sharing` permission.
+7. Confirm that the OAuth consent page identifies The Library and that the authorization dialog uses the same product styling as the normal sign-in dialog.
+8. Reconnect after server metadata or authentication changes. A client refresh is required before checking updated tool names, descriptions, schemas, annotations, or auth behavior.
 
 ## Review run
 
@@ -51,3 +52,5 @@ The following items require access outside this repository:
 - a live reviewer account and secure reviewer access entry in the submission dashboard;
 - a reviewer-accessible recording URL after the recording is made;
 - final confirmation that the deployed MCP server advertises the intended tool metadata and auth behavior.
+
+Before submitting, record the immutable deployment or release revision serving `https://mcp.thelibrary.fm/mcp`. From a fresh client connection, reconnect and verify that the live endpoint exposes the intended tool names, descriptions, schemas, and per-tool safety annotations. Then verify the live OAuth flow: consent, token refresh, grant revocation, permission-denied failures, and controlled missing or unknown-client errors. Resolve any scan or connection failure in the submission dashboard before submission, as required by the [OpenAI remote MCP review requirements](https://developers.openai.com/plugins/deploy/app-review).
