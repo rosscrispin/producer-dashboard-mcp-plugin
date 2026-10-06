@@ -1,15 +1,15 @@
 ---
 name: producer-dashboard
-description: Producer Dashboard MCP — 56 tools for managing songs, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, library views, search, share pages, split sheets, and royalty earnings. Use when the user mentions music production, songs, tracks, stages, collaborators, royalties, or sharing.
+description: The Library MCP — 57 tools for managing tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, library views, search, share pages, split sheets, and royalty earnings. Use when the user asks to inspect or manage music-library records, production stages, collaboration, sharing, comments, todos, or royalty earnings.
 ---
 
-# Producer Dashboard MCP
+# The Library MCP
 
 ## Overview
-The Producer Dashboard MCP connects the agent to a music production management app. It provides tools across songs, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, sharing, split-sheet export, royalty earnings import, search, and library views. Use these tools to help producers manage their library, track progress, earnings, and collaboration.
+The Library MCP connects the agent to a music production management app. It provides 57 tools across tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, sharing, split-sheet export, royalty earnings import, search, and library views. Use these tools to help producers manage their library, track progress, earnings, and collaboration.
 
 ## When to Use
-Use this skill when the user mentions songs, tracks, music production, stages, buckets, collaborators, comments, royalties, earnings, sharing, or any music workflow management task.
+Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
 
 ## Working Rules
 - Resolve mutable names to stable IDs before updates or destructive actions.
@@ -64,7 +64,7 @@ Collaborator -> can have deal rows
 | collaborator name | resolve with `list_collaborators` or `lookup_collaborator` first | |
 
 ## Composition Pattern
-Most Producer Dashboard requests break into:
+Most requests to The Library break into:
 
 `find -> filter -> act -> summarize`
 
@@ -164,7 +164,7 @@ Example: "Give me a full overview of my library"
 
 ## Tool Reference
 
-### Songs
+### Songs and tracks
 - `list_songs`
 - `get_song`
 - `update_song`
@@ -250,10 +250,10 @@ Example: "Give me a full overview of my library"
 6. Offer a concrete next action when the user is clearly mid-workflow.
 
 ## Authentication
-On first use, the client will prompt the user to authenticate with Producer Dashboard in the browser. Tokens are scoped and stored by the client and server OAuth flow.
+On first use, the client will prompt the user to authenticate with The Library in the browser. Tokens are scoped and stored by the client and server OAuth flow.
 
 ## Permissions
-Some operations require permissions enabled in Producer Dashboard under `Settings > AI Agent Access`:
+Some operations require permissions enabled in The Library under `Settings > AI Agent Access`:
 - `sharing`
 - `destructive_operations`
 - `bulk_operations`

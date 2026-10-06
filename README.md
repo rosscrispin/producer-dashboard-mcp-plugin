@@ -1,6 +1,6 @@
-# The Library Plugin for Codex and Claude Code
+# The Library Plugin for Codex, ChatGPT, and Claude Code
 
-Use your [The Library](https://thelibrary.fm) account to find tracks and manage approved music workflows.
+Use your [The Library](https://thelibrary.fm) account to find tracks and manage approved music workflows in Codex, ChatGPT, or Claude Code.
 
 The plugin is published by **Producer Dashboard Corp**, a Delaware company. Its composer icon and listing logo use the existing The Library app icon, bundled at `assets/app-icon.png` from the app's `build/icon-source.png`.
 
@@ -37,9 +37,21 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
+The server currently exposes 57 tools across tracks, buckets, tags, collaborators, sharing, comments, todos, search, library views, and royalty earnings. It does not create songs or upload local audio; use The Library's local import workflow for those actions.
+
+## Package validation
+
+Run the dependency-free package check before creating a ZIP or uploading a new version:
+
+```sh
+node scripts/validate-plugin.mjs
+```
+
+It checks the supported listing fields, URL shape, review case counts, bundled icon paths, stale product wording, and the documented 57-tool reference.
+
 ## Permissions
 
-Toggle these in **Producer Dashboard → Settings → AI Agent Access**:
+Toggle these in **The Library → Settings → AI Agent Access**:
 
 | Permission | Default | Needed for |
 |---|---|---|
@@ -53,6 +65,6 @@ Toggle these in **Producer Dashboard → Settings → AI Agent Access**:
 
 ## Requirements
 
-- [Claude Code](https://claude.ai/code)
-- [Producer Dashboard](https://producerdashboard.app) account
+- Codex, ChatGPT, or [Claude Code](https://claude.ai/code)
+- [The Library](https://thelibrary.fm) account
 - Dropbox connected (for sharing features)
