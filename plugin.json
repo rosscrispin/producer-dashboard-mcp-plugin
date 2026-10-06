@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "producer-dashboard",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Connect The Library to Codex and ChatGPT for authorized music library workflows.",
   "author": {
     "name": "Producer Dashboard Corp",

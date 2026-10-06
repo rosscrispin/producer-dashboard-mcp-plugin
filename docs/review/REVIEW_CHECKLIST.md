@@ -48,6 +48,8 @@ The review cases above do not prove that a client can maintain a multi-turn comp
 
 Record the model, client, tool calls, turn boundaries, fixture or account type, and failures. A skill update or scripted tool sequence is guidance and contract evidence; it is not proof of continuous conversation, autonomous planning, hosted account isolation, or successful customer writes.
 
+Observed 1.0.5 failure: the client sent `query_tracks` with an unadvertised `track_group_id` field before calling `list_track_fields`; the fixture returned `Unsupported Track field`, and the client made no calls in the next two turns. This is a schema-discovery and recovery risk. Retest with field discovery first, `rows[].id` as the Track identity, and at most one corrected retry. Keep transport, authentication, and permission failures unavailable without retry.
+
 ## Access and recovery checks
 
 - Revoke the app grant in The Library Settings, reconnect, and confirm that the MCP server requires authorization again before reading or writing account data.
