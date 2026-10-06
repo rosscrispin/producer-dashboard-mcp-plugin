@@ -1,24 +1,27 @@
 {
   "name": "glimbr",
+  "interface": {
+    "displayName": "The Library"
+  },
   "owner": {
-    "name": "Glimbr Pty Ltd"
+    "name": "Producer Dashboard Corp"
   },
   "metadata": {
-    "description": "Glimbr plugins for Claude Code",
-    "version": "1.0.0"
+    "description": "The Library plugins for Codex and Claude Code",
+    "version": "1.0.2"
   },
   "plugins": [
     {
       "name": "producer-dashboard",
-      "description": "Connect Claude Code to your Producer Dashboard account — manage songs, collaborators, tags, comments, todos, share pages, focus mode, split sheets, and royalty earnings via 56 MCP tools.",
-      "version": "1.0.1",
+      "description": "Connect The Library to Codex and Claude Code for approved music library workflows.",
+      "version": "1.0.2",
       "author": {
-        "name": "Glimbr Pty Ltd",
-        "url": "https://producerdashboard.app"
+        "name": "Producer Dashboard Corp",
+        "url": "https://thelibrary.fm"
       },
       "source": "./",
       "category": "productivity",
-      "homepage": "https://producerdashboard.app"
+      "homepage": "https://thelibrary.fm"
     }
   ]
 }

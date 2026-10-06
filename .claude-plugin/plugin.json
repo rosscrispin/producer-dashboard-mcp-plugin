@@ -1,12 +1,12 @@
 {
   "name": "producer-dashboard",
-  "version": "1.0.1",
-  "description": "Connect Claude Code to your Producer Dashboard account — manage songs, collaborators, tags, comments, todos, share pages, focus mode, split sheets, and royalty earnings via 56 MCP tools.",
+  "version": "1.0.2",
+  "description": "Connect Claude Code to your The Library account for approved music library workflows.",
   "author": {
-    "name": "Glimbr Pty Ltd",
-    "url": "https://producerdashboard.app"
+    "name": "Producer Dashboard Corp",
+    "url": "https://thelibrary.fm"
   },
-  "homepage": "https://producerdashboard.app",
+  "homepage": "https://thelibrary.fm",
   "license": "MIT",
   "keywords": ["producer-dashboard", "mcp", "music-production", "collaboration"],
   "mcpServers": "./.mcp.json"

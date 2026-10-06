@@ -1,10 +1,10 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "producer-dashboard",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Connect The Library to Codex and ChatGPT for authorized music library workflows.",
   "author": {
-    "name": "Glimbr Pty Ltd",
+    "name": "Producer Dashboard Corp",
     "url": "https://thelibrary.fm"
   },
   "homepage": "https://thelibrary.fm",
@@ -16,10 +16,12 @@
         "displayName": "The Library",
         "shortDescription": "Work with your music library in Codex and ChatGPT.",
         "longDescription": "Find tracks and manage approved music workflows through your The Library account.",
-        "developerName": "Glimbr Pty Ltd",
+        "developerName": "Producer Dashboard Corp",
         "category": "Productivity",
         "capabilities": ["Read", "Write"],
-        "websiteURL": "https://thelibrary.fm"
+        "websiteURL": "https://thelibrary.fm",
+        "composerIcon": "./assets/app-icon.png",
+        "logo": "./assets/app-icon.png"
       }
     }
   }

@@ -2,6 +2,8 @@
 
 Use your [The Library](https://thelibrary.fm) account to find tracks and manage approved music workflows.
 
+The plugin is published by **Producer Dashboard Corp**, a Delaware company. Its composer icon and listing logo use the existing The Library app icon, bundled at `assets/app-icon.png` from the app's `build/icon-source.png`.
+
 ## Codex local install
 
 Add this repository as a marketplace, then install the plugin:
