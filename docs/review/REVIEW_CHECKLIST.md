@@ -36,6 +36,18 @@ For each positive case, confirm that the result is scoped to the authenticated a
 
 For each negative case, confirm that the plugin does not call a tool and explains the supported boundary in plain language.
 
+## Compound and conversational assessment
+
+The review cases above do not prove that a client can maintain a multi-turn compound task. Add a matched read-only assessment before making that claim:
+
+1. Run one compound request that finds a bounded set, applies a second criterion, and reports the exact stable IDs.
+2. Run the same logical task over several turns: find the set, refine it with “of those”, then ask for a further calculation or read.
+3. Insert an unrelated question between turns, then resume the task. Confirm that the frozen IDs and requested fields survive the detour.
+4. Check that a request to refresh or find all records explicitly replaces the frozen scope, while a criterion such as “only high priority” refines it.
+5. Before any write test, re-read the exact target IDs, confirm current values and pagination completeness, obtain the required confirmation, and record before/after results.
+
+Record the model, client, tool calls, turn boundaries, fixture or account type, and failures. A skill update or scripted tool sequence is guidance and contract evidence; it is not proof of continuous conversation, autonomous planning, hosted account isolation, or successful customer writes.
+
 ## Access and recovery checks
 
 - Revoke the app grant in The Library Settings, reconnect, and confirm that the MCP server requires authorization again before reading or writing account data.

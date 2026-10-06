@@ -16,8 +16,30 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 - Treat names, emails, and labels as lookup inputs, not record identities.
 - Prefer `track_group_id`, bucket IDs, collaborator IDs, tag IDs, and share IDs for follow-up tool calls.
 - Do not dump raw JSON when summarizing results for the user.
+- Keep the exact returned IDs and fields for the current task in context. When the user says “those”, “the same”, or “only these”, bind the next step to that frozen set, even if a new criterion such as priority or stage is added. Do not broaden the set from a fresh library search.
+- Treat “of those”, “only”, “exclude”, and similar wording as refinements. Treat “find again”, “refresh”, “all”, or a new subject as a replacement or new task. If the scope is unclear, ask before acting. An unrelated detour does not discard a frozen selection; an explicit new task does.
+- Preserve every requested field and option across compound calls, including dates, titles, permissions, ordering, filters, and selected IDs. Do not silently substitute defaults or drop an argument on a later call.
+- Complete all required pages before claiming a count or using a result set for a write. A failed or incomplete read is unknown, not an empty result. Before any write, refresh the exact target IDs, check current values and permissions, and require the client’s confirmation policy where applicable.
+- Use only capabilities advertised by the 61 tools. Do not invent a preview, approval, native desktop action, or successful mutation. `preview_track_group_join` is a review step; native Join execution remains outside this MCP release.
 - `add_collaborator_to_song` assigns one Track through the central roster rules. It persists splits but does not share files or send an invitation.
 - `update_bucket(due_date=null)` clears the Bucket deadline. The current API does not clear inherited Track deadlines.
+
+## Continuous compound tasks
+
+Plan compound requests as `discover -> constrain -> verify -> confirm -> act -> summarize`. Keep the IDs and scope from each successful read. Re-read before a mutation because another turn, user edit, or detour may have made the selection stale.
+
+The same task may be requested in one turn or over several turns:
+
+```text
+One turn: “Find finished tracks with no open To-Dos, keep only high-priority results, and after I confirm set their due date to 2026-10-31.”
+
+Several turns:
+1. “Find finished tracks with no open To-Dos.”
+2. “Of those, keep only high-priority tracks.”
+3. “Set their due date to 2026-10-31.”
+```
+
+In both forms, identify the finished-track IDs, use the activity query for the no-open-To-Do condition, apply the priority refinement to those IDs, and show the final frozen set before confirmation. On the third turn, refresh those IDs and their current due dates, then use the appropriate song update tool only after confirmation. If the user instead says “find all high-priority finished tracks again”, start a fresh scope. Never claim that a native action exists because a user’s multi-step request implies one.
 
 ## Data Model
 

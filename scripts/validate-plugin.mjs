@@ -11,6 +11,14 @@ const fail = (message) => {
 };
 
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+const claudeManifest = JSON.parse(await readFile(resolve(root, ".claude-plugin/plugin.json"), "utf8"));
+const marketplace = JSON.parse(await readFile(resolve(root, ".claude-plugin/marketplace.json"), "utf8"));
+const packageVersion = manifest.version;
+if (typeof packageVersion !== "string" || !/^\d+\.\d+\.\d+$/.test(packageVersion)) fail("plugin.json version must be semver-like");
+if (claudeManifest.version !== packageVersion) fail(".claude-plugin/plugin.json version is out of sync");
+if (marketplace.metadata?.version !== packageVersion) fail("marketplace metadata version is out of sync");
+const marketplacePlugin = marketplace.plugins?.find((plugin) => plugin.name === manifest.name);
+if (!marketplacePlugin || marketplacePlugin.version !== packageVersion) fail("marketplace plugin version is out of sync");
 const openai = manifest.extensions?.["com.openai"];
 const listing = openai?.interface;
 const review = openai?.review;
