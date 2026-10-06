@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "producer-dashboard",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Connect The Library to Codex and ChatGPT for authorized music library workflows.",
   "author": {
     "name": "Producer Dashboard Corp",
@@ -56,7 +56,7 @@
               "description": "Create a share page for a selected set of tracks.",
               "prompt": "Create a share page for my finished tracks titled 'Review Set'.",
               "tools_triggered": "create_share_page",
-              "expected_behavior": "When sharing permission is enabled and the account has the required Dropbox connection, the plugin creates a share page for the authenticated user's finished tracks and returns the share link and settings. When either prerequisite is missing, it explains the required setup and does not create a page."
+              "expected_behavior": "When sharing permission is enabled and the application confirms that the selected files are ready to share, the plugin creates a share page and returns its link and settings. If required file delivery or permissions are unavailable, it reports the application error without claiming that sharing succeeded."
             },
             {
               "description": "Export a split sheet for a project bucket.",

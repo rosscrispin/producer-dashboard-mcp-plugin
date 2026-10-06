@@ -1,12 +1,12 @@
 ---
 name: producer-dashboard
-description: The Library MCP — 57 tools for managing tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, library views, search, share pages, split sheets, and royalty earnings. Use when the user asks to inspect or manage music-library records, production stages, collaboration, sharing, comments, todos, or royalty earnings.
+description: The Library MCP — 61 tools for managing tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, library views, search, share pages, split sheets, and royalty earnings. Use when the user asks to inspect or manage music-library records, production stages, collaboration, sharing, comments, todos, or royalty earnings.
 ---
 
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 57 tools across tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, sharing, split-sheet export, royalty earnings import, search, and library views. Use these tools to help producers manage their library, track progress, earnings, and collaboration.
+The Library MCP connects the agent to a music production management app. It provides 61 tools across tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, sharing, split-sheet export, royalty earnings import, search, and library views. Use these tools to help producers manage their library, track progress, earnings, and collaboration.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -16,6 +16,8 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 - Treat names, emails, and labels as lookup inputs, not record identities.
 - Prefer `track_group_id`, bucket IDs, collaborator IDs, tag IDs, and share IDs for follow-up tool calls.
 - Do not dump raw JSON when summarizing results for the user.
+- `add_collaborator_to_song` assigns one Track through the central roster rules. It persists splits but does not share files or send an invitation.
+- `update_bucket(due_date=null)` clears the Bucket deadline. The current API does not clear inherited Track deadlines.
 
 ## Data Model
 
@@ -29,7 +31,7 @@ The core entity. Each song has:
 - **Bucket** — project folder assignment
 - **Tags** — labels by category
 - **Collaborators** — people with roles, split percentages, publishers, and collaborator deals
-- **Comments** — feedback with optional timecodes
+- **Comments** — bounce feedback requires a canonical `file_path`; point/range timing and linked `todo_id` are optional
 - **Todos** — action items linked to songs
 
 Songs are created and deleted through the file import system, not this MCP surface.
@@ -40,7 +42,7 @@ Song -> has many collaborators
 Song -> has many tags
 Song -> has many comments
 Song -> has many todos
-Song -> belongs to one bucket
+Song -> can belong to multiple buckets
 Song -> can appear in share pages
 Collaborator -> can have share status
 Collaborator -> can reference a publisher
@@ -71,6 +73,24 @@ Most requests to The Library break into:
 Use multiple small tool calls instead of one large speculative action.
 
 ## Common Workflows
+
+### Structured Track queries
+
+Use `list_track_fields` to discover standard fields, custom UUIDs, typed values, and stage names. Use `query_tracks` for compound filters, custom values, stored metadata, relation counts, and grouped counts. Keep every prerequisite in a follow-up query. Use returned immutable IDs for later actions.
+
+- `total_count` is exact only when the query succeeds. A scan limit or failed read is unavailable, never zero.
+- `truncated` and `next_offset` describe result pages. Read the required pages before claiming a complete action scope.
+- Collaborator fields, filters, and grouping also require `collaborators.read` and `read_collaborators`.
+- Earnings fields are unavailable through this reader.
+- Recorded file paths and file counts do not prove files exist on the device.
+
+### Potential Track merges
+
+1. Query owned Track IDs and titles to identify pairs for review.
+2. Use `assess_potential_merges` for up to twenty explicit pairs. It sends current names to the external JEV classifier. It covers only those pairs and does not read the desktop button's cached candidate list.
+3. Preserve uncertain results. A match is a candidate, not permission to merge.
+4. Use `preview_track_group_join` with a chosen source ID and target ID to review record counts, blockers, warnings, and sharing effects.
+5. Explain that execution requires the desktop Join flow with a fresh local preview and explicit approval. No remote execution tool or approved desktop bridge is available in this release. Do not claim a Join succeeded.
 
 ### Information Queries
 Example: "Have there been any new comments on my latest album in the past few days?"
@@ -163,6 +183,12 @@ Example: "Give me a full overview of my library"
 ```
 
 ## Tool Reference
+
+### Structured reads and merge review
+- `list_track_fields`
+- `query_tracks`
+- `assess_potential_merges`
+- `preview_track_group_join`
 
 ### Songs and tracks
 - `list_songs`

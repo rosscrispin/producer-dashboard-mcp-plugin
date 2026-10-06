@@ -49,11 +49,11 @@ const skill = await readFile(skillPath, "utf8");
 const toolReference = skill.split("## Response Formatting Rules")[0];
 const toolNames = [...toolReference.matchAll(/^\s*- `([a-z0-9_]+)`\s*$/gm)].map((match) => match[1]);
 const uniqueToolNames = new Set(toolNames);
-if (uniqueToolNames.size !== 57) fail(`skill tool reference contains ${uniqueToolNames.size} tools; expected 57`);
+if (uniqueToolNames.size !== 61) fail(`skill tool reference contains ${uniqueToolNames.size} tools; expected 61`);
 if (/\b56 tools\b|Producer Dashboard MCP|The The Library|producerdashboard\.app/i.test(`${skill}\n${await readFile(resolve(root, "README.md"), "utf8")}`)) {
   fail("stale product wording remains in plugin documentation");
 }
 
 await access(resolve(root, listing.composerIcon));
 await access(resolve(root, listing.logo));
-console.log("Plugin manifest, review metadata, icon paths, and 57-tool skill reference are valid.");
+console.log("Plugin manifest, review metadata, icon paths, and 61-tool skill reference are valid.");

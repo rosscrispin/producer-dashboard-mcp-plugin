@@ -37,7 +37,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
-The server currently exposes 57 tools across tracks, buckets, tags, collaborators, sharing, comments, todos, search, library views, and royalty earnings. It does not create songs or upload local audio; use The Library's local import workflow for those actions.
+The server currently exposes 61 tools across tracks, buckets, tags, collaborators, sharing, comments, todos, search, library views, and royalty earnings. It includes structured Track queries, JEV pair assessment, and server Join preview. It does not execute a native Join, create songs, or upload local audio. Use The Library's desktop workflows for those actions.
 
 ## Package validation
 
@@ -47,7 +47,7 @@ Run the dependency-free package check before creating a ZIP or uploading a new v
 node scripts/validate-plugin.mjs
 ```
 
-It checks the supported listing fields, URL shape, review case counts, bundled icon paths, stale product wording, and the documented 57-tool reference.
+It checks the supported listing fields, URL shape, review case counts, bundled icon paths, stale product wording, and the documented 61-tool reference.
 
 ## Permissions
 
@@ -67,4 +67,4 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 
 - Codex, ChatGPT, or [Claude Code](https://claude.ai/code)
 - [The Library](https://thelibrary.fm) account
-- Dropbox connected (for sharing features)
+- Application file-delivery and permission prerequisites for the chosen sharing action
