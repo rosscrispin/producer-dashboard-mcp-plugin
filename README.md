@@ -71,6 +71,8 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 
 Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient or shared-Bucket member action. Review the exact server plan in the trusted app. Public links, direct collaborator delivery, shared-Bucket membership, credits, Friends and Offers remain separate actions. Revoking access, changing a Bucket role, or leaving a Bucket also requires destructive operations authority. The MCP reports remote child-share delivery separately from local file import and preserves independent access paths.
 
+Private playlist creation also requires the Sharing permission and `sharing.write` consent because it publishes an unlisted stream-only live URL. Other private playlist edits use the Organize library permission unless linked-share effects require sharing authority.
+
 ## Requirements
 
 - Codex, ChatGPT, or [Claude Code](https://claude.ai/code)
