@@ -66,8 +66,12 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 | Edit collaborators | OFF | Friend designation; collaborators.write consent |
 | Read rights | OFF | Offer, bounce and feedback reads; rights.read consent |
 | Manage rights | OFF | Offer lifecycle; rights.write consent |
+| Read local files | OFF | Reading paired desktop catalogue evidence for candidate scans and Join planning |
+| Manage local files | OFF | Reconciled native Join execution after trusted approval |
+| Pair devices | OFF | Pairing an exact desktop for local candidate scans and Join status |
+| Control session | OFF | Opening a validated native recovery or Join folder handle |
 
-Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient action. Review the exact server plan in the trusted app. Public links, collaborator folder delivery, credits, Friends and Offers remain separate actions.
+Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient action, Join, or pairing revocation. Review the exact server plan in the trusted app. Public links, collaborator folder delivery, credits, Friends, Offers, and desktop Joins remain separate actions.
 
 ## Requirements
 
