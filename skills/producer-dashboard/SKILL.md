@@ -1,12 +1,12 @@
 ---
 name: producer-dashboard
-description: The Library MCP — 61 tools for managing tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, library views, search, share pages, split sheets, and royalty earnings. Use when the user asks to inspect or manage music-library records, production stages, collaboration, sharing, comments, todos, or royalty earnings.
+description: The Library MCP — 64 tools for managing tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, library views, search, share pages, split sheets, and royalty earnings. Use when the user asks to inspect or manage music-library records, production stages, collaboration, sharing, comments, todos, or royalty earnings.
 ---
 
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 61 tools across tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, sharing, split-sheet export, royalty earnings import, search, and library views. Use these tools to help producers manage their library, track progress, earnings, and collaboration.
+The Library MCP connects the agent to a music production management app. It provides 64 tools across tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, sharing, split-sheet export, royalty earnings import, search, and library views. Use these tools to help producers manage their library, track progress, earnings, and collaboration.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -22,7 +22,7 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 - Before the first `query_tracks` call in each conversation, call `list_track_fields`. Use that catalogue as the allowlist for `fields`, `filters`, and `group_by`, including custom UUID paths. `query_tracks` automatically returns each row’s `id`; use that value as the `track_group_id` for later tools and never request an unadvertised `track_group_id` field.
 - If a structured query reports an unknown or unsupported field, treat the result as unavailable, refresh or consult the field catalogue, correct the field once, and retry at most once with advertised paths. Never retry a guessed or unadvertised field. Transport, authentication, and permission failures remain unavailable; do not retry them or report them as zero results.
 - Complete all required pages before claiming complete IDs or using a result set for a write. A successful `query_tracks` response may establish an exact `total_count` or grouped `groups` result without fetching every result page; fetch every page when individual IDs or the complete list are required. A failed or incomplete read is unknown, not an empty result. Before any write, refresh the exact target IDs, check current values and permissions, and require the client’s confirmation policy where applicable.
-- Use only capabilities advertised by the 61 tools. Do not invent a preview, approval, native desktop action, or successful mutation. `preview_track_group_join` is a review step; native Join execution remains outside this MCP release.
+- Use only capabilities advertised by the 64 tools. Do not invent a preview, approval, native desktop action, or successful mutation. `preview_track_group_join` is a review step; native Join execution remains outside this MCP release.
 - `add_collaborator_to_song` assigns one Track through the central roster rules. It persists splits but does not share files or send an invitation.
 - `update_bucket(due_date=null)` clears the Bucket deadline. The current API does not clear inherited Track deadlines.
 
@@ -150,6 +150,28 @@ Example: "Put all the latest releases in a bucket for easy access"
 7. Summarize the additions and any failed IDs
 ```
 
+### Bucket hierarchy
+
+Use `get_bucket_hierarchy` to read the owned tree and current Bucket revisions. Keep the returned parent and child UUIDs. Resolve duplicate names by their parent path. Shared Buckets remain visible through `list_buckets`; the owned hierarchy does not grant write access to them.
+
+- Use `create_bucket_v2` for a new root or child Bucket. Set `parent_id` to the resolved owned parent UUID for a child; omit it or use null for a root. Supply a fresh UUID `idempotency_key` for each logical creation.
+- Use `set_bucket_parent` to nest, move, or unnest an existing Bucket. Supply the latest `expected_version` and a fresh idempotency UUID. Null moves it to the top level. This changes hierarchy only; Tracks retain their exact memberships.
+- These writes require `projects.write` and the account's `manage_projects` permission. Existing grants do not gain this scope from a plugin update. If access is missing, report the required consent and account setting. Do not substitute a flat Bucket for a requested child.
+- Reuse the exact idempotency key and arguments after an unknown response. A changed request needs a new key. After a stale-state error, read the hierarchy again and review the current target before a new operation.
+- Verify the saved child `parent_id`, then add the selected Track with `update_song.bucket_id`. Read back all memberships to prove preservation. Parent changes do not share Tracks, send invitations, move files, or assign Tracks to ancestor Buckets.
+- The retained `create_bucket` still creates top-level Buckets under its existing `songs.write` grant. It cannot accept a parent or idempotency parameter. Retained `update_bucket` edits its advertised properties; use `set_bucket_parent` for hierarchy changes.
+
+Example: "Under finished tracks, create Ready for Release and add the matching Track."
+
+```text
+1. get_bucket_hierarchy -> resolve the finished tracks UUID and check for an existing matching child
+2. Refresh the frozen Track IDs and resolve the Ready for Release workflow
+3. create_bucket_v2(name="Ready for Release", parent_id=<parent_id>, idempotency_key=<fresh_uuid>) if needed
+4. Verify the returned saved parent_id
+5. update_song(id=<selected_track_id>, bucket_id=<child_id>)
+6. get_bucket_hierarchy and query_tracks -> verify the child and preserved Track memberships
+```
+
 ### Collaboration
 Example: "Add Joshua as a collaborator on all my tree-stage songs with 50/50 splits"
 
@@ -231,6 +253,9 @@ Example: "Give me a full overview of my library"
 - `list_buckets`
 - `get_bucket`
 - `create_bucket`
+- `create_bucket_v2`
+- `get_bucket_hierarchy`
+- `set_bucket_parent`
 - `update_bucket`
 - `delete_bucket`
 
