@@ -40,7 +40,7 @@ for (const prompt of Array.isArray(listing.defaultPrompt) ? listing.defaultPromp
 
 const positive = review?.test_cases?.positive;
 const negative = review?.test_cases?.negative;
-if (!Array.isArray(positive) || positive.length !== 5) fail("review.test_cases.positive must contain exactly five cases");
+if (!Array.isArray(positive) || positive.length !== 6) fail("review.test_cases.positive must contain exactly six cases");
 if (!Array.isArray(negative) || negative.length !== 3) fail("review.test_cases.negative must contain exactly three cases");
 for (const [index, testCase] of [...positive, ...negative].entries()) {
   for (const field of ["description", "prompt"]) {
@@ -57,11 +57,11 @@ const skill = await readFile(skillPath, "utf8");
 const toolReference = skill.split("## Response Formatting Rules")[0];
 const toolNames = [...toolReference.matchAll(/^\s*- `([a-z0-9_]+)`\s*$/gm)].map((match) => match[1]);
 const uniqueToolNames = new Set(toolNames);
-if (uniqueToolNames.size !== 107) fail(`skill tool reference contains ${uniqueToolNames.size} tools; expected 107`);
+if (uniqueToolNames.size !== 118) fail(`skill tool reference contains ${uniqueToolNames.size} tools; expected 118`);
 if (/\b56 tools\b|Producer Dashboard MCP|The The Library|producerdashboard\.app/i.test(`${skill}\n${await readFile(resolve(root, "README.md"), "utf8")}`)) {
   fail("stale product wording remains in plugin documentation");
 }
 
 await access(resolve(root, listing.composerIcon));
 await access(resolve(root, listing.logo));
-console.log("Plugin manifest, review metadata, icon paths, and 107-tool skill reference are valid.");
+console.log("Plugin manifest, review metadata, icon paths, and 118-tool skill reference are valid.");

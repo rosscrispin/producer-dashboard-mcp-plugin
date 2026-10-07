@@ -1,12 +1,12 @@
 ---
 name: producer-dashboard
-description: The Library MCP — 107 authorized tools for tracks, Buckets, collaborators, selected-recipient sharing, Friend Track Offers, comments, To-Dos, share pages, split sheets, royalty earnings, structured reads, and paired desktop Track Group Join workflows.
+description: The Library MCP — 118 authorized tools for tracks, Buckets, shared Bucket members, collaborators, selected-recipient sharing, Friend Track Offers, comments, To-Dos, share pages, split sheets, royalty earnings, structured reads, and paired desktop Track Group Join workflows.
 ---
 
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 107 tools across tracks, focus mode, collaborators, Buckets, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, search, structured reads, and paired desktop Track Group Join workflows. Use the current tool catalogue to check which actions are available to this connection. Pairing revocation creates a native consent review before the server can revoke a pairing; the MCP client cannot approve it.
+The Library MCP connects the agent to a music production management app. It provides 118 tools across tracks, focus mode, collaborators, Buckets, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, search, structured reads, and paired desktop Track Group Join workflows. Use the current tool catalogue to check which actions are available to this connection. Pairing revocation creates a native consent review before the server can revoke a pairing; the MCP client cannot approve it.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -27,6 +27,7 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 - For recipient, access, and Join changes, use `prepare -> trusted app review -> execute -> status`. Only the app can issue approval. Chat confirmation, an `approved:true` value, and possession of a plan ID are insufficient. The idempotency key is a UUID. Use the returned plan ID, approval ID and original idempotency UUID. Cancel or refresh a stale plan. Read status after an unknown outcome before retrying.
 - `add_collaborator_to_song` assigns one Track through the central roster rules. It persists splits but does not share files or send an invitation.
 - `update_bucket(due_date=null)` clears the Bucket deadline. The current API does not clear inherited Track deadlines.
+- Shared Bucket member changes always use `prepare -> trusted interactive app review -> execute_bucket_member_action -> status`. Chat text, an `approved:true` field, or a plan ID never substitutes for app approval.
 
 ## Continuous compound tasks
 
@@ -177,6 +178,25 @@ Example: "Under finished tracks, create Ready for Release and add the matching T
 6. get_bucket_hierarchy and query_tracks -> verify the child and preserved Track memberships
 ```
 
+### Shared Bucket members
+
+Use the member tools for Bucket recipients and their per-Track delivery state. These records are separate from direct Track collaborators and public share links.
+
+- `list_bucket_members` reads one Bucket's member rows, pending/accepted/revoked status, editor/viewer role, coverage blockers, and child-share delivery state. Set `include_revoked` only when the owner needs audit history. Set `include_contact_details=true` only with an explicit collaborators.read grant; it defaults to false.
+- `list_bucket_invitations` lists invitations visible to the authenticated actor. An owner sees the relevant roster; a pending recipient can discover only that recipient's own invitation.
+- `get_bucket_sharing_status` reads the aggregate Bucket and optional exact member status. A failed read is unavailable, never an empty roster. Follow cursors and require complete coverage before claiming a full list.
+- Resolve a Bucket and stable member, collaborator, Track, or child-share UUID before preparing a change. Preserve independent direct access, other-Bucket access, owner files, and existing Track records.
+
+Prepare one of these exact actions, then stop for the trusted app review: `prepare_bucket_member_invite`, `prepare_bucket_member_role`, `prepare_bucket_member_revocation`, `prepare_bucket_invitation_acceptance`, `prepare_bucket_leave`, `prepare_bucket_member_coverage_repair`, or `prepare_bucket_share_import_retry`. Each write requires sharing.write and projects.read, uses a fresh UUID idempotency key, and uses the latest opaque membership revision. Role values are only `editor` and `viewer`.
+
+- Invite accepts an explicit email and/or collaborator UUID, role, Track exclusions, and an optional missing-collaborator remedy. At least one recipient lookup is required. A pending member resend is a new reviewed plan. Collaborator directory authority is required for recipient lookup; creating Observer coverage additionally requires collaborators.write and songs.write.
+- Role, revocation, and leave operations require sharing.write and destructive.write. The owner performs member role/revoke actions. Leave selects the authenticated actor and can decline that actor's pending invitation; it never accepts a supplied member identity or transfers ownership.
+- Invitation acceptance selects the authenticated actor from the server subject and accepts no recipient or invitation identity supplied by chat.
+- Coverage repair reviews exact eligible, excluded, and source-owner-blocked Track IDs. It does not silently create coverage or bypass source-owner requirements.
+- Share import retry applies only to an existing authorized child share. It reports queued or failed remote delivery and never claims that local files were imported. Local confirmation remains a trusted app action.
+
+Call `execute_bucket_member_action` only with the returned plan ID, trusted app approval ID, and original idempotency key. The executor rejects plans from every other action family. After execution, read the operation and the Bucket/member status before reporting persisted membership, queued delivery, partial delivery, or an unknown outcome. Reuse the original key after an unknown response; do not prepare or send a second invitation.
+
 ### Collaboration
 Example: "Add Joshua as a collaborator on all my tree-stage songs with 50/50 splits"
 
@@ -300,6 +320,17 @@ Example: "Give me a full overview of my library"
 - `set_bucket_parent`
 - `update_bucket`
 - `delete_bucket`
+- `list_bucket_members`
+- `list_bucket_invitations`
+- `get_bucket_sharing_status`
+- `prepare_bucket_member_invite`
+- `prepare_bucket_member_role`
+- `prepare_bucket_member_revocation`
+- `prepare_bucket_invitation_acceptance`
+- `prepare_bucket_leave`
+- `prepare_bucket_member_coverage_repair`
+- `prepare_bucket_share_import_retry`
+- `execute_bucket_member_action`
 
 ### Tags
 - `list_tags`

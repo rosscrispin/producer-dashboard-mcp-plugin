@@ -71,6 +71,12 @@
               "prompt": "Prepare making Ari a Friend and separately offer 'Example Track' to Ari. Stop at app review.",
               "tools_triggered": "list_collaborators, list_songs, prepare_friend_designation, prepare_track_offer",
               "expected_behavior": "The plugin resolves distinct roster, account and Track IDs. It prepares two actions and reports each handoff. Friend status alone grants no sharing or Offer authority. Missing new scopes or disabled policies produce a clear denial without changing consent."
+            },
+            {
+              "description": "Manage a shared Bucket member through trusted review.",
+              "prompt": "Show me who has access to my Releases Bucket, then prepare inviting Ari as a viewer. Stop for app approval.",
+              "tools_triggered": "list_buckets, list_bucket_members, prepare_bucket_member_invite",
+              "expected_behavior": "The plugin resolves the immutable Bucket ID, reads the bounded member state, resolves Ari's recipient identity, prepares the exact viewer invitation with a UUID idempotency key, and stops at the trusted app review. It never sends an invitation from chat text, reports pending membership as accepted, or claims local files were imported."
             }
           ],
           "negative": [

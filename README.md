@@ -39,7 +39,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
-The server exposes 107 tools across tracks, Buckets, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, royalty earnings, and paired desktop candidate-scan and reviewed Track Group Join workflows. Existing grants do not expand. Automatic Join and pairing revocation require fresh device pairing and confirmation in the desktop app; the MCP client cannot approve a plan or revocation, supply native paths, or fabricate a receipt. File preparation and local playback can require The Library desktop app.
+The server exposes 118 tools across tracks, Buckets, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, royalty earnings, and paired desktop candidate-scan and reviewed Track Group Join workflows. Existing grants do not expand. Automatic Join and pairing revocation require fresh device pairing and confirmation in the desktop app; the MCP client cannot approve a plan or revocation, supply native paths, or fabricate a receipt. Recipient and shared-Bucket member tools prepare exact plans for trusted app review. File preparation, child-share delivery, and local playback can require The Library desktop app.
 
 ## Package validation
 
@@ -49,7 +49,7 @@ Run the dependency-free package check before creating a ZIP or uploading a new v
 node scripts/validate-plugin.mjs
 ```
 
-It checks the listing, review cases, icons, product wording, and the documented 107-tool reference.
+It checks the listing, review cases, icons, product wording, and the documented 118-tool reference.
 
 ## Permissions
 
@@ -65,6 +65,7 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 | Bulk operations | OFF | Batch updating multiple songs |
 | Destructive operations | OFF | Deleting buckets, tags, collaborators |
 | Read sharing | OFF | New share status and public link readers; sharing.read consent |
+| Manage buckets | OFF | Creating and organizing Bucket hierarchy; projects.write consent |
 | Edit collaborators | OFF | Friend designation; collaborators.write consent |
 | Read rights | OFF | Offer, bounce and feedback reads; rights.read consent |
 | Manage rights | OFF | Offer lifecycle; rights.write consent |
@@ -73,7 +74,7 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 | Pair devices | OFF | Pairing an exact desktop for local candidate scans and Join status |
 | Control session | OFF | Opening a validated native recovery or Join folder handle |
 
-Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient action, Join, or pairing revocation. Review the exact server plan in the trusted app. Public links, collaborator folder delivery, credits, Friends, Offers, and desktop Joins remain separate actions.
+Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient, shared-Bucket member action, Join, or pairing revocation. Review the exact server plan in the trusted app. Public links, direct collaborator delivery, shared-Bucket membership, credits, Friends, Offers, and desktop Joins remain separate actions. Revoking access, changing a Bucket role, or leaving a Bucket also requires destructive operations authority. The MCP reports remote child-share delivery separately from local file import and preserves independent access paths.
 
 ## Requirements
 
