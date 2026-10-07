@@ -1,12 +1,12 @@
 ---
 name: producer-dashboard
-description: The Library MCP — authorized music-library tools for tracks, Buckets, collaborators, selected-recipient sharing, Friend Track Offers, comments, To-Dos, share pages, split sheets, and royalty earnings.
+description: The Library MCP — 107 authorized tools for tracks, Buckets, collaborators, selected-recipient sharing, Friend Track Offers, comments, To-Dos, share pages, split sheets, royalty earnings, structured reads, and paired desktop Track Group Join workflows.
 ---
 
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 88 tools across tracks, focus mode, collaborators, Buckets, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides 107 tools across tracks, focus mode, collaborators, Buckets, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, search, structured reads, and paired desktop Track Group Join workflows. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -22,9 +22,9 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 - Before the first `query_tracks` call in each conversation, call `list_track_fields`. Use that catalogue as the allowlist for `fields`, `filters`, and `group_by`, including custom UUID paths. `query_tracks` automatically returns each row’s `id`; use that value as the `track_group_id` for later tools and never request an unadvertised `track_group_id` field.
 - If a structured query reports an unknown or unsupported field, treat the result as unavailable, refresh or consult the field catalogue, correct the field once, and retry at most once with advertised paths. Never retry a guessed or unadvertised field. Transport, authentication, and permission failures remain unavailable; do not retry them or report them as zero results.
 - Complete all required pages before claiming complete IDs or using a result set for a write. A successful `query_tracks` response may establish an exact `total_count` or grouped `groups` result without fetching every result page; fetch every page when individual IDs or the complete list are required. A failed or incomplete read is unknown, not an empty result. Before any write, refresh the exact target IDs, check current values and permissions, and require the client’s confirmation policy where applicable.
-- Use only capabilities advertised by the current tool catalogue. Do not invent approval, native desktop actions, or successful mutations. `preview_track_group_join` is a review step; native Join execution remains outside this MCP release.
+- Use only capabilities advertised by the current tool catalogue. Do not invent approval, native desktop actions, or successful mutations. `preview_track_group_join` is a review step; native Join execution requires an explicitly paired desktop, a complete frozen local plan, and the trusted app review. A tool call cannot approve a plan, supply a path, or fabricate a native receipt.
 - New share, Friend and Offer tools need their exact additional consent and app permission groups. Existing grants stay unchanged. A denied action does not authorize a grant update.
-- For recipient and access changes, use `prepare -> trusted app review -> execute -> status`. Only the app can issue approval. Chat confirmation, an `approved:true` value, and possession of a plan ID are insufficient. The idempotency key is a UUID. Use the returned plan ID, approval ID and original idempotency UUID. Cancel or refresh a stale plan. Read status after an unknown outcome before retrying.
+- For recipient, access, and Join changes, use `prepare -> trusted app review -> execute -> status`. Only the app can issue approval. Chat confirmation, an `approved:true` value, and possession of a plan ID are insufficient. The idempotency key is a UUID. Use the returned plan ID, approval ID and original idempotency UUID. Cancel or refresh a stale plan. Read status after an unknown outcome before retrying.
 - `add_collaborator_to_song` assigns one Track through the central roster rules. It persists splits but does not share files or send an invitation.
 - `update_bucket(due_date=null)` clears the Bucket deadline. The current API does not clear inherited Track deadlines.
 
@@ -116,7 +116,10 @@ Before the first `query_tracks` call in each conversation, use `list_track_field
 2. Use `assess_potential_merges` for up to twenty explicit pairs. It sends current names to the external JEV classifier. It covers only those pairs and does not read the desktop button's cached candidate list.
 3. Preserve uncertain results. A match is a candidate, not permission to merge.
 4. Use `preview_track_group_join` with a chosen source ID and target ID to review record counts, blockers, warnings, and sharing effects.
-5. Explain that execution requires the desktop Join flow with a fresh local preview and explicit approval. No remote execution tool or approved desktop bridge is available in this release. Do not claim a Join succeeded.
+5. For automatic candidates, use `list_mcp_devices` and obtain fresh user-approved pairing through `begin_mcp_device_pairing` before `start_merge_candidate_scan`. The scan is local-device scoped and may be incomplete; do not report an incomplete scan as no matches.
+6. Use `plan_track_group_join(mode="auto")` only with a completed scan. It selects at most twenty disjoint pairs under `auto-merge-v1`; it does not accept caller-selected sources or targets. Keep `eligible`, `needs_review`, `blocked`, `unavailable`, and `deferred` separate.
+7. Show the frozen plan and call `open_track_group_join_review`. The trusted desktop app owns the single batch confirmation. MCP cannot confirm, execute from text, or provide paths. After the user approves in the app, use `execute_track_group_join` with only the returned plan and approval IDs, then read `get_track_group_join_operation` until a truthful terminal or attention state.
+8. Use `continue_track_group_join_plan` only for a plan in `budget_exhausted` before review. Use `cancel_track_group_join_operation`, `retry_track_group_join`, and `list_track_group_join_recovery` only with the exact operation/edge handles and current grants. Cancellation is not rollback; retained backups and journals remain available.
 
 ### Information Queries
 Example: "Have there been any new comments on my latest album in the past few days?"
@@ -258,6 +261,27 @@ Example: "Give me a full overview of my library"
 - `assess_potential_merges`
 - `preview_track_group_join`
 
+### Paired desktop and automatic Track Group Join
+- `list_mcp_devices`
+- `begin_mcp_device_pairing`
+- `get_mcp_device_pairing`
+- `revoke_mcp_device_pairing`
+- `start_merge_candidate_scan`
+- `get_merge_candidate_scan`
+- `continue_merge_candidate_scan`
+- `cancel_merge_candidate_scan`
+- `list_merge_candidates`
+- `plan_track_group_join`
+- `continue_track_group_join_plan`
+- `get_track_group_join_plan`
+- `open_track_group_join_review`
+- `execute_track_group_join`
+- `get_track_group_join_operation`
+- `cancel_track_group_join_operation`
+- `retry_track_group_join`
+- `list_track_group_join_recovery`
+- `open_track_group_join_folder`
+
 ### Songs and tracks
 - `list_songs`
 - `get_song`
@@ -389,5 +413,9 @@ Some operations require permissions enabled in The Library under `Settings > AI 
 - `edit_collaborators` with `collaborators.write`
 - `read_rights` with `rights.read`
 - `manage_rights` with `rights.write`
+- `pair_devices`
+- `read_local_files`
+- `manage_local_files`
+- `control_session`
 
-The four new groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Do not change permissions or reconnect on the user's behalf.
+These groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Do not change permissions or reconnect on the user's behalf.

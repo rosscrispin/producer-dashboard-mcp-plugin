@@ -37,7 +37,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
-The server exposes 88 tools across tracks, Buckets, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. The new recipient tools prepare exact plans for trusted app review. Existing grants do not expand. File preparation and local playback can require The Library desktop app.
+The server exposes 107 tools across tracks, Buckets, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, royalty earnings, and paired desktop candidate-scan and reviewed Track Group Join workflows. Existing grants do not expand. Automatic Join and pairing revocation require fresh device pairing and confirmation in the desktop app; the MCP client cannot approve a plan or revocation, supply native paths, or fabricate a receipt. File preparation and local playback can require The Library desktop app.
 
 ## Package validation
 
@@ -47,7 +47,7 @@ Run the dependency-free package check before creating a ZIP or uploading a new v
 node scripts/validate-plugin.mjs
 ```
 
-It checks the listing, review cases, icons, product wording, and the documented 88-tool reference.
+It checks the listing, review cases, icons, product wording, and the documented 107-tool reference.
 
 ## Permissions
 
