@@ -37,7 +37,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
-The server exposes 88 tools across tracks, Buckets, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. The new recipient tools prepare exact plans for trusted app review. Existing grants do not expand. File preparation and local playback can require The Library desktop app.
+The server exposes 99 tools across tracks, Buckets, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. Recipient and shared-Bucket member tools prepare exact plans for trusted app review. Existing grants do not expand. File preparation, child-share delivery, and local playback can require The Library desktop app.
 
 ## Package validation
 
@@ -47,7 +47,7 @@ Run the dependency-free package check before creating a ZIP or uploading a new v
 node scripts/validate-plugin.mjs
 ```
 
-It checks the listing, review cases, icons, product wording, and the documented 88-tool reference.
+It checks the listing, review cases, icons, product wording, and the documented 99-tool reference.
 
 ## Permissions
 
@@ -63,11 +63,12 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 | Bulk operations | OFF | Batch updating multiple songs |
 | Destructive operations | OFF | Deleting buckets, tags, collaborators |
 | Read sharing | OFF | New share status and public link readers; sharing.read consent |
+| Manage buckets | OFF | Creating and organizing Bucket hierarchy; projects.write consent |
 | Edit collaborators | OFF | Friend designation; collaborators.write consent |
 | Read rights | OFF | Offer, bounce and feedback reads; rights.read consent |
 | Manage rights | OFF | Offer lifecycle; rights.write consent |
 
-Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient action. Review the exact server plan in the trusted app. Public links, collaborator folder delivery, credits, Friends and Offers remain separate actions.
+Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient or shared-Bucket member action. Review the exact server plan in the trusted app. Public links, direct collaborator delivery, shared-Bucket membership, credits, Friends and Offers remain separate actions. Revoking access, changing a Bucket role, or leaving a Bucket also requires destructive operations authority. The MCP reports remote child-share delivery separately from local file import and preserves independent access paths.
 
 ## Requirements
 
