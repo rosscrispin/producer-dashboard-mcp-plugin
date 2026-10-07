@@ -6,7 +6,7 @@ description: The Library MCP — authorized music-library tools for tracks, Buck
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 85 tools across tracks, focus mode, collaborators, Buckets, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides 88 tools across tracks, focus mode, collaborators, Buckets, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -152,6 +152,28 @@ Example: "Put all the latest releases in a bucket for easy access"
 7. Summarize the additions and any failed IDs
 ```
 
+### Bucket hierarchy
+
+Use `get_bucket_hierarchy` to read the owned tree and current Bucket revisions. Keep the returned parent and child UUIDs. Resolve duplicate names by their parent path. Shared Buckets remain visible through `list_buckets`; the owned hierarchy does not grant write access to them.
+
+- Use `create_bucket_v2` for a new root or child Bucket. Set `parent_id` to the resolved owned parent UUID for a child; omit it or use null for a root. Supply a fresh UUID `idempotency_key` for each logical creation.
+- Use `set_bucket_parent` to nest, move, or unnest an existing Bucket. Supply the latest `expected_version` and a fresh idempotency UUID. Null moves it to the top level. This changes hierarchy only; Tracks retain their exact memberships.
+- These writes require `projects.write` and the account's `manage_projects` permission. Existing grants do not gain this scope from a plugin update. If access is missing, report the required consent and account setting. Do not substitute a flat Bucket for a requested child.
+- Reuse the exact idempotency key and arguments after an unknown response. A changed request needs a new key. After a stale-state error, read the hierarchy again and review the current target before a new operation.
+- Verify the saved child `parent_id`, then add the selected Track with `update_song.bucket_id`. Read back all memberships to prove preservation. Parent changes do not share Tracks, send invitations, move files, or assign Tracks to ancestor Buckets.
+- The retained `create_bucket` still creates top-level Buckets under its existing `songs.write` grant. It cannot accept a parent or idempotency parameter. Retained `update_bucket` edits its advertised properties; use `set_bucket_parent` for hierarchy changes.
+
+Example: "Under finished tracks, create Ready for Release and add the matching Track."
+
+```text
+1. get_bucket_hierarchy -> resolve the finished tracks UUID and check for an existing matching child
+2. Refresh the frozen Track IDs and resolve the Ready for Release workflow
+3. create_bucket_v2(name="Ready for Release", parent_id=<parent_id>, idempotency_key=<fresh_uuid>) if needed
+4. Verify the returned saved parent_id
+5. update_song(id=<selected_track_id>, bucket_id=<child_id>)
+6. get_bucket_hierarchy and query_tracks -> verify the child and preserved Track memberships
+```
+
 ### Collaboration
 Example: "Add Joshua as a collaborator on all my tree-stage songs with 50/50 splits"
 
@@ -249,6 +271,9 @@ Example: "Give me a full overview of my library"
 - `list_buckets`
 - `get_bucket`
 - `create_bucket`
+- `create_bucket_v2`
+- `get_bucket_hierarchy`
+- `set_bucket_parent`
 - `update_bucket`
 - `delete_bucket`
 
