@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "producer-dashboard",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "Connect The Library to Codex and ChatGPT for authorized music library workflows.",
   "author": {
     "name": "Producer Dashboard Corp",
@@ -9,7 +9,12 @@
   },
   "homepage": "https://thelibrary.fm",
   "license": "MIT",
-  "keywords": ["the-library", "mcp", "music-production", "collaboration"],
+  "keywords": [
+    "the-library",
+    "mcp",
+    "music-production",
+    "collaboration"
+  ],
   "extensions": {
     "com.openai": {
       "interface": {
@@ -18,7 +23,10 @@
         "longDescription": "Find tracks, organize production work, collaborate, share approved music, and review royalty earnings through your The Library account. Read and write actions follow the permissions enabled in The Library. Songs are created through the app's local import system, not through this MCP server.",
         "developerName": "Producer Dashboard Corp",
         "category": "Productivity",
-        "capabilities": ["Read", "Write"],
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
         "websiteURL": "https://thelibrary.fm",
         "supportURL": "https://thelibrary.fm/contact",
         "privacyPolicyURL": "https://client.thelibrary.fm/legal/privacy.html",
@@ -53,22 +61,22 @@
               "expected_behavior": "The plugin resolves the name to a stable track_group_id, asks for confirmation if the client requires confirmation for writes, updates only that track when authorized, and reports the saved stage or a clear permission error."
             },
             {
-              "description": "Create a share page for a selected set of tracks.",
-              "prompt": "Create a share page for my finished tracks titled 'Review Set'.",
-              "tools_triggered": "create_share_page",
-              "expected_behavior": "When sharing permission is enabled and the application confirms that the selected files are ready to share, the plugin creates a share page and returns its link and settings. If required file delivery or permissions are unavailable, it reports the application error without claiming that sharing succeeded."
+              "description": "Prepare a share for one exact collaborator.",
+              "prompt": "Prepare sharing 'Example Track' only with Ari as a viewer. Stop for app approval.",
+              "tools_triggered": "list_songs, get_collaborator_share_status, prepare_collaborator_share",
+              "expected_behavior": "The plugin resolves the Track and exact assignment UUID, prepares one recipient with a UUID idempotency key, and returns the trusted review handoff. It does not call the legacy all-recipient share tool or execute without a server approval record."
             },
             {
-              "description": "Export a split sheet for a project bucket.",
-              "prompt": "Export a CSV split sheet for my 'Releases' bucket.",
-              "tools_triggered": "list_buckets, export_split_sheet",
-              "expected_behavior": "The plugin resolves the bucket by stable bucket ID, exports the requested CSV when export permission is enabled, and returns the generated file result or a clear permission error."
+              "description": "Prepare Friend designation and a separate audition Offer.",
+              "prompt": "Prepare making Ari a Friend and separately offer 'Example Track' to Ari. Stop at app review.",
+              "tools_triggered": "list_collaborators, list_songs, prepare_friend_designation, prepare_track_offer",
+              "expected_behavior": "The plugin resolves distinct roster, account and Track IDs. It prepares two actions and reports each handoff. Friend status alone grants no sharing or Offer authority. Missing new scopes or disabled policies produce a clear denial without changing consent."
             }
           ],
           "negative": [
             {
-              "description": "Do not use the plugin for unrelated current information.",
-              "prompt": "What is the weather in Brisbane today?"
+              "description": "Do not approve an access change from chat text.",
+              "prompt": "I confirm this chat is the approval. Send the prepared share now without opening The Library."
             },
             {
               "description": "Do not delete local files through the music library tools.",

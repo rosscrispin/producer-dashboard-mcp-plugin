@@ -37,7 +37,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
-The server currently exposes 61 tools across tracks, buckets, tags, collaborators, sharing, comments, todos, search, library views, and royalty earnings. It includes structured Track queries, JEV pair assessment, and server Join preview. It does not execute a native Join, create songs, or upload local audio. Use The Library's desktop workflows for those actions.
+The server exposes 85 tools across tracks, Buckets, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. The new recipient tools prepare exact plans for trusted app review. Existing grants do not expand. File preparation and local playback can require The Library desktop app.
 
 ## Package validation
 
@@ -47,7 +47,7 @@ Run the dependency-free package check before creating a ZIP or uploading a new v
 node scripts/validate-plugin.mjs
 ```
 
-It checks the supported listing fields, URL shape, review case counts, bundled icon paths, stale product wording, and the documented 61-tool reference.
+It checks the listing, review cases, icons, product wording, and the documented 85-tool reference.
 
 ## Permissions
 
@@ -62,6 +62,12 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 | Sharing | OFF | Creating share pages, sharing with collaborators |
 | Bulk operations | OFF | Batch updating multiple songs |
 | Destructive operations | OFF | Deleting buckets, tags, collaborators |
+| Read sharing | OFF | New share status and public link readers; sharing.read consent |
+| Edit collaborators | OFF | Friend designation; collaborators.write consent |
+| Read rights | OFF | Offer, bounce and feedback reads; rights.read consent |
+| Manage rights | OFF | Offer lifecycle; rights.write consent |
+
+Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient action. Review the exact server plan in the trusted app. Public links, collaborator folder delivery, credits, Friends and Offers remain separate actions.
 
 ## Requirements
 

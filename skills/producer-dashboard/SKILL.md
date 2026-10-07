@@ -1,12 +1,12 @@
 ---
 name: producer-dashboard
-description: The Library MCP — 61 tools for managing tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, library views, search, share pages, split sheets, and royalty earnings. Use when the user asks to inspect or manage music-library records, production stages, collaboration, sharing, comments, todos, or royalty earnings.
+description: The Library MCP — authorized music-library tools for tracks, Buckets, collaborators, selected-recipient sharing, Friend Track Offers, comments, To-Dos, share pages, split sheets, and royalty earnings.
 ---
 
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 61 tools across tracks, focus mode, collaborators, collaborator deals, tags, buckets, comments, todos, sharing, split-sheet export, royalty earnings import, search, and library views. Use these tools to help producers manage their library, track progress, earnings, and collaboration.
+The Library MCP connects the agent to a music production management app. It provides 85 tools across tracks, focus mode, collaborators, Buckets, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -22,7 +22,9 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 - Before the first `query_tracks` call in each conversation, call `list_track_fields`. Use that catalogue as the allowlist for `fields`, `filters`, and `group_by`, including custom UUID paths. `query_tracks` automatically returns each row’s `id`; use that value as the `track_group_id` for later tools and never request an unadvertised `track_group_id` field.
 - If a structured query reports an unknown or unsupported field, treat the result as unavailable, refresh or consult the field catalogue, correct the field once, and retry at most once with advertised paths. Never retry a guessed or unadvertised field. Transport, authentication, and permission failures remain unavailable; do not retry them or report them as zero results.
 - Complete all required pages before claiming complete IDs or using a result set for a write. A successful `query_tracks` response may establish an exact `total_count` or grouped `groups` result without fetching every result page; fetch every page when individual IDs or the complete list are required. A failed or incomplete read is unknown, not an empty result. Before any write, refresh the exact target IDs, check current values and permissions, and require the client’s confirmation policy where applicable.
-- Use only capabilities advertised by the 61 tools. Do not invent a preview, approval, native desktop action, or successful mutation. `preview_track_group_join` is a review step; native Join execution remains outside this MCP release.
+- Use only capabilities advertised by the current tool catalogue. Do not invent approval, native desktop actions, or successful mutations. `preview_track_group_join` is a review step; native Join execution remains outside this MCP release.
+- New share, Friend and Offer tools need their exact additional consent and app permission groups. Existing grants stay unchanged. A denied action does not authorize a grant update.
+- For recipient and access changes, use `prepare -> trusted app review -> execute -> status`. Only the app can issue approval. Chat confirmation, an `approved:true` value, and possession of a plan ID are insufficient. The idempotency key is a UUID. Use the returned plan ID, approval ID and original idempotency UUID. Cancel or refresh a stale plan. Read status after an unknown outcome before retrying.
 - `add_collaborator_to_song` assigns one Track through the central roster rules. It persists splits but does not share files or send an invitation.
 - `update_bucket(due_date=null)` clears the Bucket deadline. The current API does not clear inherited Track deadlines.
 
@@ -169,6 +171,22 @@ create_share_page(stages="finished", title="Finished Tracks", download_bounces=t
 
 For advanced shares, `create_share_page` also supports password, expiry, view mode, `download_split_sheet`, per-track permissions, explicit `track_files`, `track_order`, filter snapshots, column visibility, bucket artwork, and custom share images. Use `list_shares` to inspect those advanced fields after creation.
 
+### One selected collaborator and existing shares
+
+Resolve the exact Track UUID. Use `get_collaborator_share_status` to read its owner-scoped assignment IDs and current versions. `prepare_collaborator_share.recipient_id` is that Track assignment UUID. Prepare only the selected assignment and requested role. Open the returned trusted app review handoff. Use `execute_share_action` only after the app records approval for that exact plan. `share_with_collaborators` retains its all-collaborator behavior. Never use it for a one-recipient request.
+
+Use `list_public_shares` and `get_public_share` for public link properties. Prepare supported patches with `prepare_public_share_update`. Omitted fields stay unchanged. Use separate revocation plans for public links and collaborator shares. They have different IDs and effects. Unsupported password or local file selection changes use the trusted app. Do not recreate a link to simulate an update.
+
+### Friends and Track Offers
+
+Friend designation, credits, public links, direct folder shares, and Track Offers are separate authorities. `prepare_friend_designation` changes the one-way roster designation. It does not authorize a send. Read the plan's existing audience-rule effects before review. A separate `prepare_track_offer` freezes the Track and resolved recipient account UUID for an audition-only Offer. The Offer recipient UUID is distinct from a Track collaborator assignment ID. The domain does not support an MCP message field.
+
+Use `list_track_offers` with an explicit incoming or outgoing direction and follow every page. Use `get_track_offer_relationships` for the separate relationship projection. Prepare activation, decline, revocation or a sender block with the exact Offer/account UUID and current state. Activation also needs sharing authority. Revocation that ends accepted access needs destructive authority. Sender blocks affect Offers only. They do not revoke independent accepted sharing.
+
+`get_track_offer_content` can read authorized bounce feedback. `get_track_offer_playback` returns the available trusted app playback/feedback handoff. A handoff does not mean playback started. Remote records and completed transfers do not prove local files exist. Recipient activation can require the native app or a healthy provider. Report the exact blocker and receipt state.
+
+For a compound request such as "make Ari a Friend and offer Neon Arc", resolve each identity, prepare two separate plans, and return both app review handoffs. Do not use the first plan as approval for the second. On a later turn, refresh exact identities and plan state. Chat confirmation cannot replace either app approval.
+
 ### Focus Mode
 Example: "What am I working on right now?"
 
@@ -268,6 +286,32 @@ Example: "Give me a full overview of my library"
 - `list_shares`
 - `delete_share`
 - `export_split_sheet`
+- `list_public_shares`
+- `get_public_share`
+- `get_collaborator_share_status`
+- `prepare_collaborator_share`
+- `prepare_collaborator_share_revocation`
+- `prepare_public_share_update`
+- `prepare_public_share_revocation`
+- `execute_share_action`
+
+### Friends, Track Offers and trusted operations
+- `list_track_offers`
+- `get_track_offer_relationships`
+- `get_track_offer_content`
+- `get_track_offer_playback`
+- `prepare_friend_designation`
+- `prepare_track_offer`
+- `prepare_track_offer_activation`
+- `prepare_track_offer_decline`
+- `prepare_track_offer_revocation`
+- `prepare_track_offer_sender_block`
+- `execute_track_offer_action`
+- `execute_friend_action`
+- `get_mcp_action_plan`
+- `get_mcp_operation`
+- `cancel_mcp_action_plan`
+- `cancel_mcp_operation`
 
 ### Earnings
 - `import_royalty_earnings`
@@ -316,3 +360,9 @@ Some operations require permissions enabled in The Library under `Settings > AI 
 - `read_library`
 - `read_collaborators`
 - `comments_todos`
+- `read_sharing` with `sharing.read`
+- `edit_collaborators` with `collaborators.write`
+- `read_rights` with `rights.read`
+- `manage_rights` with `rights.write`
+
+The four new groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Do not change permissions or reconnect on the user's behalf.
