@@ -6,7 +6,7 @@ description: The Library MCP — authorized music-library tools for tracks, Buck
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 99 tools across tracks, focus mode, collaborators, Buckets, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides 104 tools across tracks, focus mode, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -160,6 +160,14 @@ Use `get_bucket_hierarchy` to read the owned tree and current Bucket revisions. 
 - Use `create_bucket_v2` for a new root or child Bucket. Set `parent_id` to the resolved owned parent UUID for a child; omit it or use null for a root. Supply a fresh UUID `idempotency_key` for each logical creation.
 - Use `set_bucket_parent` to nest, move, or unnest an existing Bucket. Supply the latest `expected_version` and a fresh idempotency UUID. Null moves it to the top level. This changes hierarchy only; Tracks retain their exact memberships.
 - These writes require `projects.write` and the account's `manage_projects` permission. Existing grants do not gain this scope from a plugin update. If access is missing, report the required consent and account setting. Do not substitute a flat Bucket for a requested child.
+
+### Bucket properties
+
+- Use `get_bucket_property_status` to read one owned Bucket's category tag, ordinary tag, canonical Public Page membership/publication state, and Friends audience processing. Request only the sections needed; tags need `tags.read`, and Friends status needs `rights.read` plus `collaborators.read`. It returns IDs and counts without contact fields.
+- Use `prepare_set_bucket_tags` for Bucket categories and ordinary tags. Supply `category_tag_ids` and/or `tag_ids`; omitted partitions stay unchanged and an empty supplied array clears only that partition. This does not alter Track tags. It requires `projects.write`, `tags.read`, `projects.read`, and `manage_projects`.
+- Use `prepare_set_public_page_bucket_visibility` for canonical Public Page collection membership. The review freezes complete current source and visible Track IDs, publication state, and preserved sections and explains that future eligible direct Tracks can render under the persisted limits. It preserves other sections, ordering, and display settings and requires fresh `public_pages.write` consent plus `manage_public_pages`. A setup or sales/purchase handoff blocker is reported before any write. Disable remains available for a previously selected Bucket even if its current source set is empty or archived.
+- Use `prepare_set_bucket_friends_audience` for Visible to Friends. The review shows complete current Friend and direct Track IDs, the current and future audience scope, and that enabling can queue Offers. It requires `rights.write`, `sharing.write`, `collaborators.read`, `projects.read`, and their account policies. It never grants ordinary access or sends an invitation. Disabling stops new audience Offer processing and retains existing Offers.
+- Execute all three with `execute_bucket_property_action` only after trusted app approval. Read the operation and re-read the affected Bucket property after an unknown result.
 - Reuse the exact idempotency key and arguments after an unknown response. A changed request needs a new key. After a stale-state error, read the hierarchy again and review the current target before a new operation.
 - Verify the saved child `parent_id`, then add the selected Track with `update_song.bucket_id`. Read back all memberships to prove preservation. Parent changes do not share Tracks, send invitations, move files, or assign Tracks to ancestor Buckets.
 - The retained `create_bucket` still creates top-level Buckets under its existing `songs.write` grant. It cannot accept a parent or idempotency parameter. Retained `update_bucket` edits its advertised properties; use `set_bucket_parent` for hierarchy changes.
@@ -299,6 +307,7 @@ Example: "Give me a full overview of my library"
 - `list_bucket_members`
 - `list_bucket_invitations`
 - `get_bucket_sharing_status`
+- `get_bucket_property_status`
 - `prepare_bucket_member_invite`
 - `prepare_bucket_member_role`
 - `prepare_bucket_member_revocation`
@@ -307,6 +316,10 @@ Example: "Give me a full overview of my library"
 - `prepare_bucket_member_coverage_repair`
 - `prepare_bucket_share_import_retry`
 - `execute_bucket_member_action`
+- `prepare_set_bucket_tags`
+- `prepare_set_public_page_bucket_visibility`
+- `prepare_set_bucket_friends_audience`
+- `execute_bucket_property_action`
 
 ### Tags
 - `list_tags`
@@ -421,4 +434,4 @@ Some operations require permissions enabled in The Library under `Settings > AI 
 - `read_rights` with `rights.read`
 - `manage_rights` with `rights.write`
 
-The four new groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Do not change permissions or reconnect on the user's behalf.
+The five new groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Do not change permissions or reconnect on the user's behalf.
