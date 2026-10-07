@@ -8,13 +8,13 @@
   },
   "metadata": {
     "description": "The Library plugins for Codex, ChatGPT, and Claude Code",
-    "version": "1.0.6"
+    "version": "1.0.7"
   },
   "plugins": [
     {
       "name": "producer-dashboard",
       "description": "Connect The Library to Codex, ChatGPT, and Claude Code for approved music library workflows.",
-      "version": "1.0.6",
+      "version": "1.0.7",
       "author": {
         "name": "Producer Dashboard Corp",
         "url": "https://thelibrary.fm"

@@ -136,14 +136,18 @@ Use `search_song_activity` for To-Do or comment presence and absence queries. Do
 - Use exact UTC boundaries for a comment period. Use stable user IDs for a specific author.
 
 ### Organize And Categorize
+
+`update_song.bucket_id` adds a membership and preserves existing memberships. `batch_update_songs` does not accept `bucket_id`. Never send an unsupported batch parameter. Bucket reads require `projects.read`; Bucket creation and membership adds require `songs.write` and the account edit permission. Report missing OAuth access before claiming an operation succeeded.
 Example: "Put all the latest releases in a bucket for easy access"
 
 ```text
 1. list_buckets -> check whether a Releases bucket exists
 2. create_bucket(name="Releases") if needed
 3. list_songs(stages=finished, limit=50) -> get song IDs
-4. batch_update_songs(track_group_ids=[...], bucket_id=<bucket_id>)
-5. Summarize what moved
+4. Freeze the complete Track IDs and refresh their current Bucket memberships
+5. update_song(id=<track_id>, bucket_id=<bucket_id>) for each selected Track
+6. query_tracks(track_ids=[...], fields=["title", "buckets"]) -> verify the new Bucket and all prior memberships
+7. Summarize the additions and any failed IDs
 ```
 
 ### Collaboration
