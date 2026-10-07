@@ -1,12 +1,12 @@
 ---
 name: producer-dashboard
-description: The Library MCP — authorized music-library tools for tracks, Buckets, collaborators, selected-recipient sharing, Friend Track Offers, comments, To-Dos, share pages, split sheets, and royalty earnings.
+description: The Library MCP — authorized music-library tools for tracks, private playlists, Buckets, collaborators, selected-recipient sharing, Friend Track Offers, comments, To-Dos, share pages, split sheets, and royalty earnings.
 ---
 
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 104 tools across tracks, focus mode, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides 121 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -28,6 +28,12 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 - `add_collaborator_to_song` assigns one Track through the central roster rules. It persists splits but does not share files or send an invitation.
 - `update_bucket(due_date=null)` clears the Bucket deadline. The current API does not clear inherited Track deadlines.
 - Shared Bucket member changes always use `prepare -> trusted interactive app review -> execute_bucket_member_action -> status`. Chat text, an `approved:true` field, or a plan ID never substitutes for app approval.
+- Private playlist writes use `prepare_playlist_* -> trusted interactive app review -> execute_playlist_action`. Keep the ordered Track UUID set, opaque playlist version, linked-share effects, and original idempotency UUID from the returned plan. Chat confirmation cannot approve execution.
+- `list_playlists` and `get_playlist` read internal playlist records. A playlist is separate from a public share link. Follow item cursors before claiming complete membership, and treat unavailable items as remote state without claiming local files.
+- `get_playlist_file_options` reads one owned playlist Track's safe opaque file choices. It requires both `sharing.read`/Read sharing and `library.read`/Read library consent and returns only choice IDs, revisions, kinds, names, sizes, downloadability, and the default marker; it never returns paths or credentials.
+- Private playlist create, membership changes, layout changes, and deletion require fresh `organization.write` consent and the `organize_library` permission. Creation also publishes an unlisted stream-only live URL, so it requires `sharing.write` and the `sharing` permission. Requests containing more than one Track also require `bulk.write` and `bulk_operations`; deletion adds destructive authority.
+- Use `prepare_playlist_share_create`, `prepare_playlist_share_update`, and `prepare_playlist_share_revoke` for playlist links. Share operations require `sharing.write`; linked playlist mutations are checked again by the application. Password input is transient and never report it back.
+- Playlist-share inputs use the closed action contract. Create is `{playlist_id, expected_version, parameters, idempotency_key}`; update is `{share_id, expected_version, patch, idempotency_key}`; revoke is `{share_id, expected_version, idempotency_key}`. Create `parameters` and update `patch` allow only `title`, `page_description`, `view_mode`, `expiration_days`, `artwork`, `background`, `column_visibility`, `track_information`, `download_permissions`, `track_files`, `metadata_receipts`, `track_order`, `approval_settings`, `password`, and `visualizer`. Do not send `private_binding`, owner identity, raw URLs or paths as file selectors, or other internal fields. File selectors use opaque `{id, revision, kind}` handles and metadata receipts remain server-protected.
 
 ## Continuous compound tasks
 
@@ -363,6 +369,25 @@ Example: "Give me a full overview of my library"
 - `prepare_public_share_revocation`
 - `execute_share_action`
 
+### Private playlists
+- `list_playlists`
+- `get_playlist`
+- `get_playlist_parameters`
+- `prepare_playlist_create`
+- `prepare_playlist_update`
+- `prepare_playlist_add_tracks`
+- `prepare_playlist_remove_tracks`
+- `prepare_playlist_replace_tracks`
+- `prepare_playlist_reorder_tracks`
+- `prepare_playlist_update_layout`
+- `prepare_playlist_delete`
+- `get_playlist_share`
+- `get_playlist_file_options`
+- `prepare_playlist_share_create`
+- `prepare_playlist_share_update`
+- `prepare_playlist_share_revoke`
+- `execute_playlist_action`
+
 ### Friends, Track Offers and trusted operations
 - `list_track_offers`
 - `get_track_offer_relationships`
@@ -432,5 +457,6 @@ Some operations require permissions enabled in The Library under `Settings > AI 
 - `edit_collaborators` with `collaborators.write`
 - `read_rights` with `rights.read`
 - `manage_rights` with `rights.write`
+- `organize_library` with `organization.write`
 
 The five new groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Do not change permissions or reconnect on the user's behalf.

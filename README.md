@@ -37,7 +37,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
-The server exposes 104 tools across tracks, Buckets, Bucket properties, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. Recipient, shared-Bucket member, and Bucket property tools prepare exact plans for trusted app review. Existing grants do not expand. File preparation, child-share delivery, and local playback can require The Library desktop app.
+The server exposes 121 tools across tracks, private playlists, Buckets, Bucket properties, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. Recipient, playlist, shared-Bucket member, and Bucket property tools prepare exact plans for trusted app review. Existing grants do not expand. File preparation, child-share delivery, and local playback can require The Library desktop app.
 
 ## Package validation
 
@@ -47,7 +47,7 @@ Run the dependency-free package check before creating a ZIP or uploading a new v
 node scripts/validate-plugin.mjs
 ```
 
-It checks the listing, review cases, icons, product wording, and the documented 104-tool reference.
+It checks the listing, review cases, icons, product wording, and the documented 121-tool reference.
 
 ## Permissions
 
@@ -65,11 +65,14 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 | Read sharing | OFF | New share status and public link readers; sharing.read consent |
 | Manage buckets | OFF | Creating and organizing Bucket hierarchy; projects.write consent |
 | Manage Public Page visibility | OFF | Adding or removing owned Buckets from the canonical Public Page collection; public_pages.write consent |
+| Organize library | OFF | Creating and changing private playlists; organization.write consent |
 | Edit collaborators | OFF | Friend designation; collaborators.write consent |
 | Read rights | OFF | Offer, bounce and feedback reads; rights.read consent |
 | Manage rights | OFF | Offer lifecycle; rights.write consent |
 
 Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient or shared-Bucket member action. Review the exact server plan in the trusted app. Public links, direct collaborator delivery, shared-Bucket membership, credits, Friends and Offers remain separate actions. Revoking access, changing a Bucket role, or leaving a Bucket also requires destructive operations authority. The MCP reports remote child-share delivery separately from local file import and preserves independent access paths.
+
+Private playlist creation also requires the Sharing permission and `sharing.write` consent because it publishes an unlisted stream-only live URL. Other private playlist edits use the Organize library permission unless linked-share effects require sharing authority.
 
 ## Requirements
 
