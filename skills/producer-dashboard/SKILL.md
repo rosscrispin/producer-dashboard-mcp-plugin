@@ -160,6 +160,8 @@ Use `get_bucket_hierarchy` to read the owned tree and current Bucket revisions. 
 - Use `create_bucket_v2` for a new root or child Bucket. Set `parent_id` to the resolved owned parent UUID for a child; omit it or use null for a root. Supply a fresh UUID `idempotency_key` for each logical creation.
 - Use `set_bucket_parent` to nest, move, or unnest an existing Bucket. Supply the latest `expected_version` and a fresh idempotency UUID. Null moves it to the top level. This changes hierarchy only; Tracks retain their exact memberships.
 - These writes require `projects.write` and the account's `manage_projects` permission. Existing grants do not gain this scope from a plugin update. If access is missing, report the required consent and account setting. Do not substitute a flat Bucket for a requested child.
+- Verify the saved child `parent_id`, then add the selected Track with `update_song.bucket_id`. Read back all memberships to prove preservation. Parent changes do not share Tracks, send invitations, move files, or assign Tracks to ancestor Buckets.
+- The retained `create_bucket` still creates top-level Buckets under its existing `songs.write` grant. It cannot accept a parent or idempotency parameter. Retained `update_bucket` edits its advertised properties; use `set_bucket_parent` for hierarchy changes.
 
 ### Bucket properties
 
@@ -169,9 +171,6 @@ Use `get_bucket_hierarchy` to read the owned tree and current Bucket revisions. 
 - Use `prepare_set_bucket_friends_audience` for Visible to Friends. The review shows complete current Friend and direct Track IDs, the current and future audience scope, and that enabling can queue Offers. It requires `rights.write`, `sharing.write`, `collaborators.read`, `projects.read`, and their account policies. It never grants ordinary access or sends an invitation. Disabling stops new audience Offer processing and retains existing Offers.
 - Execute all three with `execute_bucket_property_action` only after trusted app approval. Read the operation and re-read the affected Bucket property after an unknown result.
 - Reuse the exact idempotency key and arguments after an unknown response. A changed request needs a new key. After a stale-state error, read the hierarchy again and review the current target before a new operation.
-- Verify the saved child `parent_id`, then add the selected Track with `update_song.bucket_id`. Read back all memberships to prove preservation. Parent changes do not share Tracks, send invitations, move files, or assign Tracks to ancestor Buckets.
-- The retained `create_bucket` still creates top-level Buckets under its existing `songs.write` grant. It cannot accept a parent or idempotency parameter. Retained `update_bucket` edits its advertised properties; use `set_bucket_parent` for hierarchy changes.
-
 Example: "Under finished tracks, create Ready for Release and add the matching Track."
 
 ```text
