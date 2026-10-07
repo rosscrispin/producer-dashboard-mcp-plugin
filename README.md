@@ -37,7 +37,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
-The server exposes 99 tools across tracks, Buckets, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. Recipient and shared-Bucket member tools prepare exact plans for trusted app review. Existing grants do not expand. File preparation, child-share delivery, and local playback can require The Library desktop app.
+The server exposes 115 tools across tracks, private playlists, Buckets, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. Recipient, playlist, and shared-Bucket member tools prepare exact plans for trusted app review. Existing grants do not expand. File preparation, child-share delivery, and local playback can require The Library desktop app.
 
 ## Package validation
 
@@ -47,7 +47,7 @@ Run the dependency-free package check before creating a ZIP or uploading a new v
 node scripts/validate-plugin.mjs
 ```
 
-It checks the listing, review cases, icons, product wording, and the documented 99-tool reference.
+It checks the listing, review cases, icons, product wording, and the documented 115-tool reference.
 
 ## Permissions
 
@@ -64,6 +64,7 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 | Destructive operations | OFF | Deleting buckets, tags, collaborators |
 | Read sharing | OFF | New share status and public link readers; sharing.read consent |
 | Manage buckets | OFF | Creating and organizing Bucket hierarchy; projects.write consent |
+| Organize library | OFF | Creating and changing private playlists; organization.write consent |
 | Edit collaborators | OFF | Friend designation; collaborators.write consent |
 | Read rights | OFF | Offer, bounce and feedback reads; rights.read consent |
 | Manage rights | OFF | Offer lifecycle; rights.write consent |
