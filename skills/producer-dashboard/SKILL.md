@@ -6,7 +6,7 @@ description: The Library MCP — 107 authorized tools for tracks, Buckets, colla
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 107 tools across tracks, focus mode, collaborators, Buckets, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, search, structured reads, and paired desktop Track Group Join workflows. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides 107 tools across tracks, focus mode, collaborators, Buckets, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, search, structured reads, and paired desktop Track Group Join workflows. Use the current tool catalogue to check which actions are available to this connection. Pairing revocation creates a native consent review before the server can revoke a pairing; the MCP client cannot approve it.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
