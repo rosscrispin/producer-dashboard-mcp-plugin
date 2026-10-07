@@ -1,6 +1,6 @@
 # The Library Plugin for Codex, ChatGPT, and Claude Code
 
-Use your [The Library](https://thelibrary.fm) account to find tracks and manage approved music workflows in Codex, ChatGPT, or Claude Code.
+Use your [The Library](https://thelibrary.fm) account to find tracks and manage authorized music workflows in Codex, ChatGPT, or Claude Code.
 
 The plugin is published by **Producer Dashboard Corp**, a Delaware company. Its composer icon and listing logo use the existing The Library app icon, bundled at `assets/app-icon.png` from the app's `build/icon-source.png`.
 
@@ -37,7 +37,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
-The server exposes 121 tools across tracks, private playlists, Buckets, Bucket properties, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. Recipient, playlist, shared-Bucket member, and Bucket property tools prepare exact plans for trusted app review. Existing grants do not expand. File preparation, child-share delivery, and local playback can require The Library desktop app.
+The server exposes 121 tools across tracks, private playlists, Buckets, Bucket properties, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. Recipient, shared-Bucket member, and Bucket property tools prepare exact plans for trusted app review. Playlist writes use `prepare -> execute -> status` under the authorized OAuth grant and do not require an extra app review; legacy playlist plans without the server-owned direct marker retain their approval flow. Existing grants do not expand. File preparation, child-share delivery, and local playback can require The Library desktop app.
 
 ## Package validation
 
@@ -72,7 +72,7 @@ Toggle these in **The Library → Settings → AI Agent Access**:
 
 Fresh consent is required for each new scope. Chat confirmation cannot approve a recipient or shared-Bucket member action. Review the exact server plan in the trusted app. Public links, direct collaborator delivery, shared-Bucket membership, credits, Friends and Offers remain separate actions. Revoking access, changing a Bucket role, or leaving a Bucket also requires destructive operations authority. The MCP reports remote child-share delivery separately from local file import and preserves independent access paths.
 
-Private playlist creation also requires the Sharing permission and `sharing.write` consent because it publishes an unlisted stream-only live URL. Other private playlist edits use the Organize library permission unless linked-share effects require sharing authority.
+Private playlist creation also requires the Sharing permission and `sharing.write` consent because it publishes an unlisted stream-only live URL. Other private playlist edits use the Organize library permission unless linked-share effects require sharing authority. Prepare each exact playlist action, execute it with the returned plan ID and original idempotency UUID, then read operation status. Client confirmation policies remain client-controlled.
 
 ## Requirements
 
