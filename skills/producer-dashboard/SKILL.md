@@ -6,7 +6,7 @@ description: The Library MCP — authorized music-library tools for tracks, priv
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 185 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides 207 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -550,6 +550,50 @@ Recipient management and approval emails use exact prepared plans and trusted ap
 - `execute_share_approval_action`
 - `get_share_approval_delivery_receipt`
 
+### Recipient review and media
+
+- Use `prepare_public_recipient_connect` for an exact public share UUID and fixed audience. Open its returned Library link. The recipient unlocks the page and selects Connect. Owner OAuth alone does not authorize recipient review.
+- Read `get_public_recipient_context` with exactly one intent or context identifier. Follow every cursor from `list_public_recipient_tracks` before claiming a complete selection. Use `get_public_recipient_track` for exact files and review item revisions.
+- Use `get_public_share_media` or `download_public_share_file` for the selected permitted file. Open the trusted Library handoff. A returned handle or link does not prove that playback started or a download completed.
+- `submit_public_recipient_approval` uses the browser-granted review context, exact item/response revisions and the original UUID key. It needs no second owner review. After a lost response, read `get_public_recipient_operation`; do not submit a different key.
+
+### Offer feedback
+
+Use `submit_track_offer_feedback` for one authorized Offer bounce with current Offer and bounce revisions. Feedback requires `rights.read` and `comments.write`. A timecode is a point or a strictly increasing range. It does not activate access or import files. Recover a lost response with `get_track_offer_feedback_operation` and the original key.
+
+### Connected app file services
+
+Native actions require fresh `files.read`, `files.write`, `device.pair` or `session.control` consent as stated by the tool and the matching enabled account policies. Existing grants do not expand. Use `list_mcp_devices`, `begin_mcp_device_pairing` and `get_mcp_device_pairing`. The human completes exact capability consent in the Library app. Use the exact pairing review for `revoke_mcp_device_pairing`.
+
+Read `get_native_file_sync_status` with a new UUID key. Recover its original command with `get_native_file_sync_operation`. Status comes from the selected app; server delivery does not establish local file existence.
+
+Prepare pause, resume or retry with the exact project revision. Owner file preparation also requires the exact share revision. Recipient import takes an accepted direct assignment, accepted Bucket child or activated Offer identity and current access revision. The connected app uses its configured root. Never pass a path, open a folder picker or invent a local binding. Use `execute_native_file_sync_action` only with the saved reviewed plan and original key. Read the signed receipt before any retry. Project pause is not exact transfer cancellation. Do not report local files from an access or queued receipt.
+
+### Recipient and native tool reference
+
+- `list_mcp_devices`
+- `begin_mcp_device_pairing`
+- `get_mcp_device_pairing`
+- `revoke_mcp_device_pairing`
+- `get_native_file_sync_status`
+- `prepare_native_file_sync_pause`
+- `prepare_native_file_sync_resume`
+- `prepare_native_file_sync_retry`
+- `prepare_native_owner_share_files`
+- `prepare_native_recipient_import`
+- `execute_native_file_sync_action`
+- `get_native_file_sync_operation`
+- `prepare_public_recipient_connect`
+- `get_public_recipient_context`
+- `list_public_recipient_tracks`
+- `get_public_recipient_track`
+- `get_public_share_media`
+- `download_public_share_file`
+- `submit_public_recipient_approval`
+- `get_public_recipient_operation`
+- `submit_track_offer_feedback`
+- `get_track_offer_feedback_operation`
+
 ## Response Formatting Rules
 1. Summarize results in natural language instead of dumping raw JSON.
 2. Group output by song, collaborator, bucket, or share as appropriate.
@@ -577,4 +621,9 @@ Some operations require permissions enabled in The Library under `Settings > AI 
 - `manage_rights` with `rights.write`
 - `organize_library` with `organization.write`
 
-The five new groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Do not change permissions or reconnect on the user's behalf.
+- `read_local_files` with `files.read`
+- `manage_local_files` with `files.write`
+- `pair_devices` with `device.pair`
+- `control_session` with `session.control`
+
+The additional groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Do not change permissions or reconnect on the user's behalf.
