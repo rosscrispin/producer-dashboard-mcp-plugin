@@ -6,7 +6,7 @@ description: The Library MCP — authorized music-library tools for tracks, priv
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 121 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides 167 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -236,6 +236,24 @@ create_share_page(stages="finished", title="Finished Tracks", download_bounces=t
 
 For advanced shares, `create_share_page` also supports password, expiry, view mode, `download_split_sheet`, per-track permissions, explicit `track_files`, `track_order`, filter snapshots, column visibility, bucket artwork, and custom share images. Use `list_shares` to inspect those advanced fields after creation.
 
+### Artists, labels and account PRO memberships
+
+Use `list_artists`, `list_labels` and `list_pro_memberships` for the owned roster. Follow every cursor before reporting a full list. Restart a read if its saved roster revision changes. These readers require rights read authority. A Track display string is not an artist roster identity.
+
+- Artist and label create/update actions use exact prepared plans and their OAuth grant. Execute with the original idempotency UUID. Do not supply an approval reference. Artist creation accepts a name only; profile fields use a separate update with `expected_updated_at`.
+- Artist profile name changes show affected Tracks and preserve association IDs. Use the canonical social link fields and nullable profile fields. Global artist deletion is unavailable in the current UI.
+- Read `get_track_artist_state` before adding or removing an artist credit. Select the exact artist or association UUID and returned relationship revision. Use a trusted reviewed plan for the association change. Removal also needs destructive authority. The last association removal clears the Track artist display.
+- Label deletion uses the exact current version and trusted review. Active references block deletion. Preserve the label before-state in the operation receipt. Do not detach references to force deletion.
+- PRO memberships belong to the account. They do not represent a publisher or external PRO verification. Create/update/delete use trusted reviewed plans and the current membership version. The primary switch is atomic. Deletion needs destructive authority and preserves the before-state receipt.
+
+### AI provenance and collaborator merge
+
+AI services remain central `ai_tool` records with no human account, email, Friend, share, access or split binding. Resolve that central UUID first. Read the current Track, assignment and provenance revisions before a mutation. Add and update accept only the closed provenance fields. Removal preserves the central AI record. All three use `execute_ai_collaborator_action` after trusted review.
+
+Use `list_track_ai_collaborators`, `list_tracks_with_ai_collaborators` and `export_ai_provenance_for_tracks` for bounded owner-scoped evidence. Follow cursors and require complete coverage before a full answer. Export requires exact selected Track IDs and export authority. Failed or incomplete reads cannot become zero results.
+
+Use `get_collaborator_merge_preview` with two exact owned central UUIDs. It returns current identity versions, complete reference fingerprints, counts and blockers. `prepare_merge_collaborators` refreshes and binds this evidence to one reviewed plan. Conflicting identity, owner credits, active access, Friends, Offers, Agreements, deals or other external references block the merge. Do not remove those references to force it. A merge does not send an invitation or modify files. Read the operation and exact receipt after a response loss. Reuse the original idempotency UUID.
+
 ### One selected collaborator and existing shares
 
 Resolve the exact Track UUID. Use `get_collaborator_share_status` to read its owner-scoped assignment IDs and current versions. `prepare_collaborator_share.recipient_id` is that Track assignment UUID. Prepare only the selected assignment and requested role. Open the returned trusted app review handoff. Use `execute_share_action` only after the app records approval for that exact plan. `share_with_collaborators` retains its all-collaborator behavior. Never use it for a one-recipient request.
@@ -363,6 +381,37 @@ Example: "Give me a full overview of my library"
 - `prepare_update_publisher_metadata`
 - `execute_collaborator_action`
 - `execute_collaborator_metadata_action`
+
+### People roster and AI provenance
+- `list_artists`
+- `prepare_create_artist`
+- `prepare_update_artist`
+- `execute_artist_action`
+- `get_track_artist_state`
+- `prepare_add_track_artist`
+- `prepare_remove_track_artist`
+- `execute_track_artist_action`
+- `list_labels`
+- `prepare_create_label`
+- `prepare_update_label`
+- `prepare_delete_label`
+- `execute_label_action`
+- `list_pro_memberships`
+- `prepare_pro_membership_create`
+- `prepare_pro_membership_update`
+- `prepare_pro_membership_delete`
+- `execute_pro_membership_action`
+- `list_ai_service_presets`
+- `list_track_ai_collaborators`
+- `list_tracks_with_ai_collaborators`
+- `export_ai_provenance_for_tracks`
+- `get_collaborator_merge_preview`
+- `get_ai_collaborator_action_receipt`
+- `prepare_add_track_ai_collaborator`
+- `prepare_update_track_ai_collaborator`
+- `prepare_remove_track_ai_collaborator`
+- `prepare_merge_collaborators`
+- `execute_ai_collaborator_action`
 
 ### Collaborators And Publishers
 - `list_collaborators`
