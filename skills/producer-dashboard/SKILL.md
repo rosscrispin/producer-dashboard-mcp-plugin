@@ -217,6 +217,16 @@ Example: "Add Joshua as a collaborator on all my tree-stage songs with 50/50 spl
 4. Summarize songs changed and any skips
 ```
 
+### Exact collaborator and publisher properties
+
+Read canonical fields and the saved revision with `get_collaborator_record` or `get_publisher_record`. Read the complete assignment set and aggregate revision with `get_track_collaborator_state`. It works for a Track with no assignments. Use `get_track_collaborator_properties` for one exact association. Credit role is separate from viewer/editor file access.
+
+- Name and notes use `prepare_update_collaborator_metadata` or `prepare_update_publisher_metadata`, then `execute_collaborator_metadata_action`. Fresh direct plans need `songs.write` and `edit_songs`. They accept no approval reference and cannot change identity, rights, splits, Friend state or access.
+- Full records use `prepare_create_collaborator_record`, `prepare_update_collaborator_record`, `prepare_create_publisher_record` or `prepare_update_publisher_record`. These use trusted review and `execute_collaborator_action`. Updates need the current revision. `ipi_number` is the publisher field; `ipi` is not an alias.
+- Exact Track actions use `prepare_add_track_collaborator`, `prepare_update_track_collaborator`, `prepare_update_track_collaborator_splits` and `prepare_set_collaborator_export_permission`. Resolve the central collaborator UUID before addition and the Track association UUID before an update. Additions create no invitation or file grant.
+- Splits are finite percentages from 0 to 100. Omission preserves values and zero is valid. Observer splits stay zero. A role change to Observer shows the split effects and needs rights authority. Export permission reconciles the existing member permission and sends no invitation.
+- After an unknown response, read `get_mcp_operation` and the exact domain receipt with the original operation ID and idempotency key. Do not create a second plan for an uncertain write. A missing receipt does not prove that an in-flight request failed.
+
 ### Share Pages
 Example: "Create a share page for my finished tracks with downloads enabled"
 
@@ -334,6 +344,25 @@ Example: "Give me a full overview of my library"
 - `remove_tag`
 - `create_tag`
 - `delete_tag`
+
+### Collaborator property tools
+- `get_collaborator_record`
+- `get_publisher_record`
+- `get_track_collaborator_properties`
+- `get_track_collaborator_state`
+- `get_collaborator_action_receipt`
+- `prepare_add_track_collaborator`
+- `prepare_update_track_collaborator`
+- `prepare_update_track_collaborator_splits`
+- `prepare_set_collaborator_export_permission`
+- `prepare_create_collaborator_record`
+- `prepare_update_collaborator_record`
+- `prepare_create_publisher_record`
+- `prepare_update_publisher_record`
+- `prepare_update_collaborator_metadata`
+- `prepare_update_publisher_metadata`
+- `execute_collaborator_action`
+- `execute_collaborator_metadata_action`
 
 ### Collaborators And Publishers
 - `list_collaborators`
