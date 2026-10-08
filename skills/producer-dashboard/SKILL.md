@@ -6,7 +6,7 @@ description: The Library MCP — authorized music-library tools for tracks, priv
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 175 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides 185 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -259,7 +259,21 @@ Use `get_collaborator_merge_preview` with two exact owned central UUIDs. It retu
 
 Resolve the exact Track UUID. Use `get_collaborator_share_status` to read its owner-scoped assignment IDs and current versions. `prepare_collaborator_share.recipient_id` is that Track assignment UUID. Prepare only the selected assignment and requested role. Open the returned trusted app review handoff. Use `execute_share_action` only after the app records approval for that exact plan. `share_with_collaborators` retains its all-collaborator behavior. Never use it for a one-recipient request.
 
-Use `list_public_shares` and `get_public_share` for public link properties. Prepare supported patches with `prepare_public_share_update`. Omitted fields stay unchanged. Use separate revocation plans for public links and collaborator shares. They have different IDs and effects. Unsupported password or local file selection changes use the trusted app. Do not recreate a link to simulate an update.
+Use `list_public_shares` and `get_public_share` for public link properties. The retained `prepare_public_share_update` supports its published property allowlist. The modern `prepare_playlist_share_update` adds password, filters, layout, artwork, attribution and opaque file choices. Use each tool's current schema. Omitted fields stay unchanged. Use separate revocation plans for public links and collaborator shares. They have different IDs and effects. Local file preparation requires the trusted app. Do not recreate a link to simulate an update.
+
+### Direct invitation lifecycle and Inbox/Outbox
+
+Use `list_share_inbox` for incoming assignments and `list_share_outbox` for outgoing assignments. Continue through every returned cursor before reporting a complete list. Keep the cursor's filters, contact option and limit unchanged. A stale or incomplete result requires a fresh read. Do not turn a failed read into an empty Inbox.
+
+Each item has a source kind. A direct Track assignment, Bucket child path and Bucket membership have different immutable IDs. Use `get_share_inbox_item` or `get_share_outbox_item` with its closed `share_reference` to refresh the exact item. Set the source kind and only the IDs required by that branch. Direct invitation actions reject Bucket items. Contact details require the optional collaborator read permission. Do not infer a recipient from a display name or copy an email into an execute target.
+
+For direct assignments, use `prepare_accept_track_invitation`, `prepare_decline_track_invitation`, `prepare_leave_direct_share`, `prepare_resend_collaborator_invitation` or `prepare_revoke_collaborator_share`. Bind the assignment UUID, Track UUID and current revisions from the reader to one new UUID idempotency key. The older `prepare_collaborator_share_revocation` is a compatible alias for the same revoke action; its `recipient_id` is the assignment UUID.
+
+Acceptance, decline and direct leave act as the receiver. Resend and revoke act as the Track owner. Direct leave preserves independent Bucket access. Owner revoke closes the selected recipient's direct, membership and Bucket-child paths to that same Track. Show the exact affected path IDs from the prepared plan. It preserves Bucket membership, other recipients, other Tracks and owner files. Revoke also requires destructive authority.
+
+Open the exact trusted review when preparation requires it. Use `execute_share_action` with the original plan and key after the app records approval. Read `get_mcp_operation` after execution and `get_direct_share_delivery_status` for current delivery. Reuse the original operation/key after a response loss. An unknown resend outcome cannot authorize another send. Accepted access, provider delivery and local file readiness are separate results.
+
+A compound request can be one turn or several turns: list incoming pending invitations, select one exact direct assignment, refresh its detail, prepare acceptance, complete the trusted review and read the operation result. Keep the selection fixed by UUID. Revalidate it after a detour or user edit. Report server acceptance without claiming local import or playback.
 
 ### Friends and Track Offers
 
@@ -453,6 +467,16 @@ Recipient management and approval emails use exact prepared plans and trusted ap
 - `prepare_public_share_update`
 - `prepare_public_share_revocation`
 - `execute_share_action`
+- `list_share_inbox`
+- `get_share_inbox_item`
+- `list_share_outbox`
+- `get_share_outbox_item`
+- `get_direct_share_delivery_status`
+- `prepare_accept_track_invitation`
+- `prepare_decline_track_invitation`
+- `prepare_leave_direct_share`
+- `prepare_resend_collaborator_invitation`
+- `prepare_revoke_collaborator_share`
 
 ### Private playlists
 - `list_playlists`
