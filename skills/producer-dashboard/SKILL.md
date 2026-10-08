@@ -6,7 +6,7 @@ description: The Library MCP — authorized music-library tools for tracks, priv
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 167 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides 175 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -31,6 +31,7 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 - Private playlist writes use `prepare_playlist_* -> execute_playlist_action -> get_mcp_operation`. Fresh plans in this family execute directly under the authorized OAuth grant; they do not need an extra trusted app review or `approval_id`. Keep the ordered Track UUID set, opaque playlist version, linked-share effects, and original idempotency UUID from the returned plan. The server-owned direct marker decides whether a plan is fresh and direct. Legacy plans without that marker still require their returned `approval_id`; never forge or add an approval reference to a direct plan. Client confirmation policies remain controlled by the connected client.
 - `list_playlists` and `get_playlist` read internal playlist records. A playlist is separate from a public share link. Follow item cursors before claiming complete membership, and treat unavailable items as remote state without claiming local files.
 - `get_playlist_file_options` reads one owned playlist Track's safe opaque file choices. It requires both `sharing.read`/Read sharing and `library.read`/Read library consent and returns only choice IDs, revisions, kinds, names, sizes, downloadability, and the default marker; it never returns paths or credentials.
+- `get_playlist_share_file_options` reads safe opaque choices by owned share UUID and member Track UUID. Use it for unlinked share pages. Keep the returned share revision and each file kind and revision for updates. Artwork readback distinguishes bucket artwork from custom share artwork. Unknown stored filters are preserved by updates.
 - Private playlist create, membership changes, layout changes, and deletion require fresh `organization.write` consent and the `organize_library` permission. Creation also publishes an unlisted stream-only live URL, so it requires `sharing.write` and the `sharing` permission. Requests containing more than one Track also require `bulk.write` and `bulk_operations`; deletion adds destructive authority.
 - Use `prepare_playlist_share_create`, `prepare_playlist_share_update`, and `prepare_playlist_share_revoke` for playlist links. Share operations require `sharing.write`; linked playlist mutations are checked again by the application. Password input is transient and never report it back.
 - Playlist-share inputs use the closed action contract. Create is `{playlist_id, expected_version, parameters, idempotency_key}`; update is `{share_id, expected_version, patch, idempotency_key}`; revoke is `{share_id, expected_version, idempotency_key}`. Create `parameters` and update `patch` allow only `title`, `page_description`, `view_mode`, `expiration_days`, `artwork`, `background`, `column_visibility`, `track_information`, `download_permissions`, `track_files`, `metadata_receipts`, `track_order`, `approval_settings`, `password`, and `visualizer`. Do not send `private_binding`, owner identity, raw URLs or paths as file selectors, or other internal fields. File selectors use opaque `{id, revision, kind}` handles and metadata receipts remain server-protected.
@@ -234,7 +235,7 @@ Example: "Create a share page for my finished tracks with downloads enabled"
 create_share_page(stages="finished", title="Finished Tracks", download_bounces=true, download_stems=true)
 ```
 
-For advanced shares, `create_share_page` also supports password, expiry, view mode, `download_split_sheet`, per-track permissions, explicit `track_files`, `track_order`, filter snapshots, column visibility, bucket artwork, and custom share images. Use `list_shares` to inspect those advanced fields after creation.
+For advanced shares, `create_share_page` also supports password, expiry, view mode, `download_split_sheet`, per-track permissions, explicit `track_files`, `track_order`, filter snapshots, column visibility, bucket artwork, and custom share images. Use `list_shares` to inspect those advanced fields after creation. The tool supports at most 250 distinct Track UUIDs. A larger selection fails without truncation. Bucket or stage selection requires Library read consent and permission and must resolve complete stable membership before creation. An unavailable page or changed selection is a failure; never publish a partial collection.
 
 ### Artists, labels and account PRO memberships
 
@@ -310,6 +311,12 @@ Example: "Give me a full overview of my library"
 5. list_songs(workflow=needs_mix)
 6. Synthesize into a concise dashboard summary
 ```
+
+### Public share activity and approval management
+
+Use `get_share_activity` for an owned share. Its six public event types, time range and page size are closed and bounded. Follow `next_cursor` until coverage is complete. Restart after a stale cursor. Approval events and decisions are available through `get_share_approval_state`. Recipient contacts require collaborator read authority.
+
+Recipient management and approval emails use exact prepared plans and trusted app review. Resolve share, recipient and approval item UUIDs. An approval item is selected with its Track UUID. Do not supply a path, bounce ID or recipient bearer token. Recipient management does not send mail or grant file access. A send targets one exact recipient. Read the returned operation and delivery receipt using both the operation ID and original idempotency UUID. A delivery reported as unknown must not be resent automatically. Native-only shares require the returned native handoff.
 
 ## Tool Reference
 
@@ -461,6 +468,7 @@ Example: "Give me a full overview of my library"
 - `prepare_playlist_delete`
 - `get_playlist_share`
 - `get_playlist_file_options`
+- `get_playlist_share_file_options`
 - `prepare_playlist_share_create`
 - `prepare_playlist_share_update`
 - `prepare_playlist_share_revoke`
@@ -509,6 +517,14 @@ Example: "Give me a full overview of my library"
 ### Search
 - `search_comments`
 - `search_song_activity`
+
+- `get_share_activity`
+- `get_share_approval_state`
+- `prepare_share_approval_recipients`
+- `prepare_send_share_approval_request`
+- `prepare_resend_share_approval_request`
+- `execute_share_approval_action`
+- `get_share_approval_delivery_receipt`
 
 ## Response Formatting Rules
 1. Summarize results in natural language instead of dumping raw JSON.
