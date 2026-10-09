@@ -6,7 +6,7 @@ description: The Library MCP — authorized music-library tools for tracks, priv
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides 207 tools across tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides tools for Tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
 Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
@@ -14,12 +14,12 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 ## Working Rules
 - Resolve mutable names to stable IDs before updates or destructive actions.
 - Treat names, emails, and labels as lookup inputs, not record identities.
-- Prefer `track_group_id`, bucket IDs, collaborator IDs, tag IDs, and share IDs for follow-up tool calls.
+- Carry the immutable Track UUID across follow-up calls. Map it to each tool's exact input field: `id`, `track_id`, or `track_group_id`. Bucket, collaborator, tag and share UUIDs are separate identities.
 - Do not dump raw JSON when summarizing results for the user.
 - Keep the exact returned IDs and fields for the current task in context. When the user says “those”, “the same”, or “only these”, bind the next step to that frozen set, even if a new criterion such as priority or stage is added. Do not broaden the set from a fresh library search.
 - Treat references such as “of those”, “all of those”, “only these”, and “exclude” as refinements of the frozen selection. Treat explicit whole-library language such as “all my tracks”, “search the library again”, or “refresh the results”, or a new subject, as a replacement or new task. If the scope is unclear, ask before acting. An unrelated detour does not discard a frozen selection. Keep it as inactive context when another task starts, and resume it if the user explicitly returns to it.
 - Preserve every requested field and option across compound calls, including dates, titles, permissions, ordering, filters, and selected IDs. Do not silently substitute defaults or drop an argument on a later call.
-- Before the first `query_tracks` call in each conversation, call `list_track_fields`. Use that catalogue as the allowlist for `fields`, `filters`, and `group_by`, including custom UUID paths. `query_tracks` automatically returns each row’s `id`; use that value as the `track_group_id` for later tools and never request an unadvertised `track_group_id` field.
+- Before the first `query_tracks` call in each conversation, call `list_track_fields`. Use that catalogue as the allowlist for `fields`, `filters`, and `group_by`, including custom UUID paths. `query_tracks` automatically returns each row’s `id`; keep that immutable Track UUID and use each later tool's exact parameter name. Never request an unadvertised `track_group_id` field.
 - If a structured query reports an unknown or unsupported field, treat the result as unavailable, refresh or consult the field catalogue, correct the field once, and retry at most once with advertised paths. Never retry a guessed or unadvertised field. Transport, authentication, and permission failures remain unavailable; do not retry them or report them as zero results.
 - Complete all required pages before claiming complete IDs or using a result set for a write. A successful `query_tracks` response may establish an exact `total_count` or grouped `groups` result without fetching every result page; fetch every page when individual IDs or the complete list are required. A failed or incomplete read is unknown, not an empty result. Before any write, refresh the exact target IDs, check current values and permissions, and require the client’s confirmation policy where applicable.
 - Use only capabilities advertised by the current tool catalogue. Do not invent approval, native desktop actions, or successful mutations. `preview_track_group_join` is a review step; native Join execution remains outside this MCP release.
@@ -38,7 +38,7 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 
 ## Continuous compound tasks
 
-Plan compound requests as `discover -> constrain -> verify -> confirm -> act -> summarize`. Keep the IDs and scope from each successful read. Re-read before a mutation because another turn, user edit, or detour may have made the selection stale. If the user starts another task, retain the old selection as inactive context and resume it only when the user explicitly returns; revalidate it before any write.
+Plan compound requests as `discover -> constrain -> verify -> act -> summarize`. Apply the connected client's confirmation policy and any trusted app review required by the specific action. Keep the IDs and scope from each successful read. Re-read before a mutation because another turn, user edit, or detour may have made the selection stale. If the user starts another task, retain the old selection as inactive context and resume it only when the user explicitly returns; revalidate it before any write.
 
 The same task may be requested in one turn or over several turns:
 
@@ -51,7 +51,7 @@ Several turns:
 3. “Set their due date to 2026-10-31.”
 ```
 
-In both forms, identify the finished-track IDs, use the activity query for the no-open-To-Do condition, apply the priority refinement to those IDs, and show the final frozen set before confirmation. On the third turn, refresh those IDs and their current due dates, then use the appropriate song update tool only after confirmation. If the user instead says “find all high-priority finished tracks again”, start a fresh scope. Never claim that a native action exists because a user’s multi-step request implies one.
+In both forms, identify the finished-track IDs. Use `search_song_activity(candidate_track_group_ids=[...], todo_state="no_open")` for the no-open-To-Do condition. Refine those returned IDs with `query_tracks(track_ids=[...], filters=[{field:"priority",operator:"eq",value:"high"}])`. Keep the final frozen set and refresh its current revisions before the write. Apply the client's confirmation policy and wait when the user requests confirmation. Use the versioned batch action for a supported shared patch across the selected set. Complete its required trusted review before execution. If the user instead says “find all high-priority finished tracks again”, start a fresh scope. Never claim that a native action exists because a user’s multi-step request implies one.
 
 ## Data Model
 
@@ -155,10 +155,27 @@ Example: "Put all the latest releases in a bucket for easy access"
 2. create_bucket(name="Releases") if needed
 3. list_songs(stages=finished, limit=50) -> get song IDs
 4. Freeze the complete Track IDs and refresh their current Bucket memberships
-5. update_song(id=<track_id>, bucket_id=<bucket_id>) for each selected Track
-6. query_tracks(track_ids=[...], fields=["title", "buckets"]) -> verify the new Bucket and all prior memberships
-7. Summarize the additions and any failed IDs
+5. get_track_bucket_memberships(track_id=<track_id>) for each selected Track
+6. add_track_bucket_membership(track_id=<track_id>, bucket_id=<bucket_id>, expected_membership_version=<current>, idempotency_key=<new UUID>)
+7. Complete each required trusted review and execute_track_bucket_membership_action with the original key
+8. get_track_bucket_memberships and get_track_edit_action_operation -> verify saved memberships and delivery state separately
+9. Summarize the additions and any failed or pending IDs
 ```
+
+### Versioned Track edits
+
+Use these tools only when the current connection advertises them. A plugin update does not expand an existing OAuth grant.
+
+- Use `get_track_metadata_state` with the immutable Track UUID. Keep the exact returned `version`. A `legacy:null` revision is valid. Due dates can be timestamp values. Preserve lyrics and notes exactly, including whitespace.
+- `clear_track_due_date` uses `{id, expected_version, idempotency_key}`. `update_track_lyrics` and `update_track_notes` use `{track_id, expected_version, lyrics|notes, idempotency_key}`. Null clears the selected value. Lyrics are limited to 40,000 characters and notes to 10,000. NUL is invalid. Send exact text without trimming, truncation or line-ending changes. Report a validation limit if the requested text cannot be submitted. These plans use `songs.write` and `edit_songs`. Execute with `execute_track_metadata_action({plan_id,idempotency_key})`. Fresh direct plans require no extra app review or approval reference.
+- Use `get_track_bucket_memberships` to read the complete Bucket UUID set, current `membership_version`, and locked memberships. It needs `library.read`, `projects.read`, and `read_library`.
+- Use `add_track_bucket_membership` for an additive membership. Use `remove_track_bucket_membership` with exactly one `bucket_id` or `clear_all:true`. Use `set_track_bucket_memberships` only for an explicit replacement request. Each write needs the current `expected_membership_version` and one new UUID key. Read membership state again after a committed relation change before the next edit to that Track. Multiple Bucket memberships are preserved by addition. Locked memberships cannot be removed by a replacement or clear.
+- Membership preparation needs `songs.write` and `projects.read`, with `edit_songs` and `read_library`. The plan can also require sharing authority when delivery changes. Open the exact trusted app review. Execute with `execute_track_bucket_membership_action({plan_id,approval_id,idempotency_key})` using the app-issued approval and original key. Report saved memberships separately from pending, failed or unknown propagation. A saved relation does not prove a collaborator received files.
+- Use `prepare_track_metadata_batch` for 1–50 unique Track UUIDs and one supported patch. Supply `expected_versions` with exactly one current revision per selected UUID. It adds `bulk.write` and `bulk_operations` to song edit authority. Keep all requested fields and the full selection. Do not silently drop stale or inaccessible Tracks. Use the returned per-Track results to report each outcome.
+- The retained `batch_update_songs` needs `songs.write` and `bulk.write` scopes plus the `edit_songs` and `bulk_operations` permissions. Report its actual `committed_track_ids`, `uncommitted_track_ids`, and counts. A partial or empty result is not full success. An invalid receipt leaves the outcome unknown; inspect the selected Tracks before retrying.
+- Execute a batch with `execute_track_metadata_batch({plan_id,approval_id,idempotency_key})` after its exact trusted review. A stale unexecuted plan must be replaced: re-read the same selected IDs and authority, then prepare a new plan with a new logical key and exact revisions. If scope must change, make that decision explicit before preparing it. If execution returned per-Track results, report committed, stale and denied IDs separately. Do not retry committed IDs or the whole batch. Do not split a reviewed batch into individual writes to avoid its required authority.
+- Read plans with `get_track_edit_action_plan`. After a lost execute response, read that original plan to obtain its `operation_id`. Then use `get_track_edit_action_operation({operation_id,idempotency_key})` with the original key. Inspect operation status and any before/after results. If no operation is available, keep the outcome unresolved and use only the same plan and key for an allowed retry. Do not retry when the authority or plan state is unavailable. Never generate a second key to resolve a timeout. `cancel_track_edit_action_plan` cancels a pending plan and does not undo a committed edit.
+- These are database metadata and relation operations. They do not create, move, import or delete owned files. Office-dependent device pairing, real-file transfer and audible playback acceptance remain separate checks.
 
 ### Bucket hierarchy
 
@@ -201,12 +218,15 @@ Use the member tools for Bucket recipients and their per-Track delivery state. T
 Prepare one of these exact actions, then stop for the trusted app review: `prepare_bucket_member_invite`, `prepare_bucket_member_role`, `prepare_bucket_member_revocation`, `prepare_bucket_invitation_acceptance`, `prepare_bucket_leave`, `prepare_bucket_member_coverage_repair`, or `prepare_bucket_share_import_retry`. Each write requires sharing.write and projects.read, uses a fresh UUID idempotency key, and uses the latest opaque membership revision. Role values are only `editor` and `viewer`.
 
 - Invite accepts an explicit email and/or collaborator UUID, role, Track exclusions, and an optional missing-collaborator remedy. At least one recipient lookup is required. A pending member resend is a new reviewed plan. Collaborator directory authority is required for recipient lookup; creating Observer coverage additionally requires collaborators.write and songs.write.
+- The prepared invitation freezes the resolved recipient UUID and account binding. If either binding changes, refresh the exact plan before any membership, Observer, notification or delivery effect. Do not use a matching display name as replacement authority.
 - Role, revocation, and leave operations require sharing.write and destructive.write. The owner performs member role/revoke actions. Leave selects the authenticated actor and can decline that actor's pending invitation; it never accepts a supplied member identity or transfers ownership.
 - Invitation acceptance selects the authenticated actor from the server subject and accepts no recipient or invitation identity supplied by chat.
 - Coverage repair reviews exact eligible, excluded, and source-owner-blocked Track IDs. It does not silently create coverage or bypass source-owner requirements.
 - Share import retry applies only to an existing authorized child share. It reports queued or failed remote delivery and never claims that local files were imported. Local confirmation remains a trusted app action.
 
 Call `execute_bucket_member_action` only with the returned plan ID, trusted app approval ID, and original idempotency key. The executor rejects plans from every other action family. After execution, read the operation and the Bucket/member status before reporting persisted membership, queued delivery, partial delivery, or an unknown outcome. Reuse the original key after an unknown response; do not prepare or send a second invitation.
+
+A terminal source-owner entitlement stop remains stopped after an upgrade. Delivery requires a new entitled owner action. Keep saved access, notification handoff, provider acceptance, and local files as separate results. A delivery receipt does not prove notification inbox or settings management.
 
 ### Collaboration
 Example: "Add Joshua as a collaborator on all my tree-stage songs with 50/50 splits"
@@ -348,6 +368,21 @@ Recipient management and approval emails use exact prepared plans and trusted ap
 - `list_focused_tracks`
 - `set_focus_override`
 - `clear_focus_overrides`
+- `get_track_metadata_state`
+- `clear_track_due_date`
+- `update_track_lyrics`
+- `update_track_notes`
+- `execute_track_metadata_action`
+- `get_track_bucket_memberships`
+- `add_track_bucket_membership`
+- `remove_track_bucket_membership`
+- `set_track_bucket_memberships`
+- `execute_track_bucket_membership_action`
+- `prepare_track_metadata_batch`
+- `execute_track_metadata_batch`
+- `get_track_edit_action_plan`
+- `get_track_edit_action_operation`
+- `cancel_track_edit_action_plan`
 
 ### Buckets
 - `list_buckets`

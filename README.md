@@ -37,7 +37,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 - "What songs need mixing? Set their due date to end of month"
 - "Tag all songs in test 4 as Cinematic"
 
-The server exposes 207 tools across tracks, private playlists, Buckets, Bucket properties, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. Recipient, shared-Bucket member, Bucket property and full collaborator tools prepare exact plans for trusted app review. Named collaborator and publisher name/notes actions use the original songs.write grant and an exact direct execution contract. Playlist writes use `prepare -> execute -> status` under the authorized OAuth grant and do not require an extra app review; legacy playlist plans without the server-owned direct marker retain their approval flow. Inbox and Outbox readers keep direct assignments and Bucket paths separate. Direct invitation acceptance, decline, leave, resend and revoke use exact assignment and Track revisions. Recipient Connect grants a fixed browser-authorized context for safe reads, media handoffs and approval decisions. Offer bounce feedback uses an exact durable comment receipt. Connected app file actions use fresh device and session consent, signed commands and the existing file service. The published OAuth set contains 22 scopes. Existing grants do not expand. File preparation, child-share delivery, and local playback can require The Library desktop app.
+The server exposes 222 tools across tracks, private playlists, Buckets, Bucket properties, shared Bucket members, collaborators, sharing, Friend Track Offers, comments, To-Dos, search, and royalty earnings. Recipient, shared-Bucket member, Bucket property and full collaborator tools prepare exact plans for trusted app review. Named collaborator and publisher name/notes actions use the original songs.write grant and an exact direct execution contract. Playlist writes use `prepare -> execute -> status` under the authorized OAuth grant and do not require an extra app review; legacy playlist plans without the server-owned direct marker retain their approval flow. Inbox and Outbox readers keep direct assignments and Bucket paths separate. Direct invitation acceptance, decline, leave, resend and revoke use exact assignment and Track revisions. Recipient Connect grants a fixed browser-authorized context for safe reads, media handoffs and approval decisions. Offer bounce feedback uses an exact durable comment receipt. Connected app file actions use fresh device and session consent, signed commands and the existing file service. Versioned Track tools clear due dates, edit lyrics and notes, and add, remove or replace Bucket memberships. Single metadata writes use exact direct grant execution. Membership changes and the closed eight-field bulk metadata patch require their trusted review and current revisions. Partial results and pending delivery remain explicit. The published OAuth set contains 22 scopes. Existing grants do not expand. File preparation, child-share delivery, and local playback can require The Library desktop app.
 
 ## Package validation
 
@@ -47,7 +47,7 @@ Run the dependency-free package check before creating a ZIP or uploading a new v
 node scripts/validate-plugin.mjs
 ```
 
-It checks the listing, review cases, icons, product wording, and the documented 207-tool reference.
+It checks the listing, review cases, icons, product wording, and the documented 222-tool reference.
 
 ## Permissions
 
