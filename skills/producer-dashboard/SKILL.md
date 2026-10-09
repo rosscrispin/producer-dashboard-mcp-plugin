@@ -124,7 +124,7 @@ Before the first `query_tracks` call in each conversation, use `list_track_field
 2. Use `assess_potential_merges` for up to twenty explicit pairs. It sends current names to the external JEV classifier. It covers only those pairs and does not read the desktop button's cached candidate list.
 3. Preserve uncertain results. A match is a candidate, not permission to merge.
 4. Use `preview_track_group_join` with a chosen source ID and target ID to review record counts, blockers, warnings, and sharing effects.
-5. Explain that execution requires the desktop Join flow with a fresh local preview and explicit approval. No remote execution tool or approved desktop bridge is available in this release. Do not claim a Join succeeded.
+5. Use the advertised native Join flow: complete the current-device scan, prepare and inspect the exact Join plan, open the trusted desktop review, execute only after app approval, then read the operation and recovery state. A hosted preview or preparation result is not a completed Join. The paired desktop must remain the authority for local files; do not treat this as arbitrary filesystem or remote execution.
 
 ### Information Queries
 Example: "Have there been any new comments on my latest album in the past few days?"
