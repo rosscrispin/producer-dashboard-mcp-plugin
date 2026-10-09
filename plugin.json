@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "producer-dashboard",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "Connect The Library to Codex and ChatGPT for authorized music library workflows.",
   "author": {
     "name": "Producer Dashboard Corp",
@@ -20,7 +20,7 @@
       "interface": {
         "displayName": "The Library",
         "shortDescription": "Manage your music library",
-        "longDescription": "Find tracks, organize playlists and production work, collaborate, share approved music, and review royalty earnings through your The Library account. Read and write actions follow the permissions enabled in The Library. Songs are created through the app's local import system, not through this MCP server.",
+        "longDescription": "Find Tracks, manage playlists and collaboration, automate production work, edit Public Pages, and review royalty earnings through your Library account. Connected desktop tools use the app\u2019s canonical file import, metadata, backup, playback and Track Join services. Each action checks its current OAuth scopes, account permissions and native capability. Account and financial changes use trusted provider handoffs.",
         "developerName": "Producer Dashboard Corp",
         "category": "Productivity",
         "capabilities": [
@@ -89,8 +89,8 @@
               "prompt": "Delete every audio file from my computer."
             },
             {
-              "description": "Do not claim that the MCP server creates songs or imports local audio.",
-              "prompt": "Create a new song in my library and upload this audio file."
+              "description": "Do not create an owned Track without verified local source evidence.",
+              "prompt": "Create a new owned Track with no local bounce or project and invent a successful import receipt."
             }
           ]
         }

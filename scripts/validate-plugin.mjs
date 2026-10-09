@@ -54,14 +54,23 @@ for (const [index, testCase] of positive.entries()) {
 }
 
 const skill = await readFile(skillPath, "utf8");
-const toolReference = skill.split("## Response Formatting Rules")[0];
-const toolNames = [...toolReference.matchAll(/^\s*- `([a-z0-9_]+)`\s*$/gm)].map((match) => match[1]);
+const catalogue = JSON.parse(await readFile(resolve(root, "skills/producer-dashboard/references/tool-catalogue.json"), "utf8"));
+const toolNames = catalogue.tools?.map((tool) => tool.name) || [];
 const uniqueToolNames = new Set(toolNames);
-if (uniqueToolNames.size !== 222) fail(`skill tool reference contains ${uniqueToolNames.size} tools; expected 222`);
+if (!toolNames.length || uniqueToolNames.size !== toolNames.length) fail("catalogue has missing or duplicate tool names");
+if (catalogue.release !== packageVersion) fail("catalogue release differs from the package");
+if (!/^[a-f0-9]{40}$/.test(catalogue.source_commit || "")) fail("catalogue needs the exact runtime source commit");
+if (catalogue.scopes?.length !== 42 || new Set(catalogue.scopes).size !== 42) fail("reviewed parity scope catalogue is incomplete");
+for (const tool of catalogue.tools) {
+  if (!tool.inputSchema || !tool.annotations || !tool.metadata?.requiredScope) fail(`incomplete tool schema: ${tool.name}`);
+  const requiredScopes = [tool.metadata.requiredScope, ...(tool.metadata.additionalScopes || []), ...(tool.metadata.alternativeScopes || []), ...(tool.metadata.alternativeScopeSets || []).flat()];
+  if (requiredScopes.some(scope => !catalogue.scopes.includes(scope))) fail(`unknown scope: ${tool.name}`);
+}
+await access(resolve(root, "skills/producer-dashboard/references/parity-workflows.md"));
 if (/\b56 tools\b|Producer Dashboard MCP|The The Library|producerdashboard\.app/i.test(`${skill}\n${await readFile(resolve(root, "README.md"), "utf8")}`)) {
   fail("stale product wording remains in plugin documentation");
 }
 
 await access(resolve(root, listing.composerIcon));
 await access(resolve(root, listing.logo));
-console.log("Plugin manifest, review metadata, icon paths, and 222-tool skill reference are valid.");
+console.log(`Plugin manifest, review metadata, icon paths, ${uniqueToolNames.size}-tool catalogue and parity guide are valid.`);

@@ -1,15 +1,15 @@
 ---
 name: producer-dashboard
-description: The Library MCP — authorized music-library tools for tracks, private playlists, Buckets, collaborators, selected-recipient sharing, Friend Track Offers, comments, To-Dos, share pages, split sheets, and royalty earnings.
+description: The Library MCP — authorized music-library tools for tracks, private playlists, Buckets, collaborators, selected-recipient sharing, Friend Track Offers, comments, To-Dos, share pages, automation, account handoffs, royalty work, and connected desktop file workflows.
 ---
 
 # The Library MCP
 
 ## Overview
-The Library MCP connects the agent to a music production management app. It provides tools for Tracks, focus mode, private playlists, collaborators, Buckets, Bucket properties, shared Bucket members, sharing, Friend Track Offers, comments, To-Dos, split sheets, royalty earnings, and search. Use the current tool catalogue to check which actions are available to this connection.
+The Library MCP connects the agent to a music production management app. It provides tools for Tracks, playlists, Buckets, collaboration, sharing, To-Dos, automations, definitions, Public Pages, royalties, account handoffs and connected desktop workflows. Use the current tool catalogue to check which actions are available to this connection.
 
 ## When to Use
-Use this skill when the user asks to inspect or manage songs or tracks, production stages, buckets, collaborators, comments, todos, sharing, saved views, search results, or royalty earnings. Do not activate it for unrelated questions, local-file deletion, or requests to create songs or upload audio; those actions are outside this MCP surface.
+Use this skill for authorized Library data and connected desktop operations. This includes native file import, metadata, backup, playback and Track Join when the current connection advertises those tools. Use repository engineering guidance for product implementation. Do not use library tools as arbitrary filesystem access.
 
 ## Working Rules
 - Resolve mutable names to stable IDs before updates or destructive actions.
@@ -22,7 +22,7 @@ Use this skill when the user asks to inspect or manage songs or tracks, producti
 - Before the first `query_tracks` call in each conversation, call `list_track_fields`. Use that catalogue as the allowlist for `fields`, `filters`, and `group_by`, including custom UUID paths. `query_tracks` automatically returns each row’s `id`; keep that immutable Track UUID and use each later tool's exact parameter name. Never request an unadvertised `track_group_id` field.
 - If a structured query reports an unknown or unsupported field, treat the result as unavailable, refresh or consult the field catalogue, correct the field once, and retry at most once with advertised paths. Never retry a guessed or unadvertised field. Transport, authentication, and permission failures remain unavailable; do not retry them or report them as zero results.
 - Complete all required pages before claiming complete IDs or using a result set for a write. A successful `query_tracks` response may establish an exact `total_count` or grouped `groups` result without fetching every result page; fetch every page when individual IDs or the complete list are required. A failed or incomplete read is unknown, not an empty result. Before any write, refresh the exact target IDs, check current values and permissions, and require the client’s confirmation policy where applicable.
-- Use only capabilities advertised by the current tool catalogue. Do not invent approval, native desktop actions, or successful mutations. `preview_track_group_join` is a review step; native Join execution remains outside this MCP release.
+- Use only capabilities advertised by the current tool catalogue. Do not invent approval, native desktop actions, or successful mutations. `preview_track_group_join` is a hosted review step. Full native Join requires the separately advertised native plan, trusted review, execution and recovery tools.
 - New share, Friend and Offer tools need their exact additional consent and app permission groups. Existing grants stay unchanged. A denied action does not authorize a grant update.
 - For recipient and access changes, use `prepare -> trusted app review -> execute -> status`. Only the app can issue approval. Chat confirmation, an `approved:true` value, and possession of a plan ID are insufficient. The idempotency key is a UUID. Use the returned plan ID, approval ID and original idempotency UUID. Cancel or refresh a stale plan. Read status after an unknown outcome before retrying.
 - `add_collaborator_to_song` assigns one Track through the central roster rules. It persists splits but does not share files or send an invitation.
@@ -68,7 +68,7 @@ The core entity. Each song has:
 - **Comments** — bounce feedback requires a canonical `file_path`; point/range timing and linked `todo_id` are optional
 - **Todos** — action items linked to songs
 
-Songs are created and deleted through the file import system, not this MCP surface.
+Owned Tracks are created or removed through the canonical native import and removal services. A database row alone does not establish or remove an owned file. Use the exact native plan and receipt; preserve archived-state and owner requirements.
 
 ### Relationships
 ```text
@@ -354,236 +354,9 @@ Recipient management and approval emails use exact prepared plans and trusted ap
 
 ## Tool Reference
 
-### Structured reads and merge review
-- `list_track_fields`
-- `query_tracks`
-- `assess_potential_merges`
-- `preview_track_group_join`
+Use the connection's current discovery result for callable tools and exact input schemas. The packaged [catalogue snapshot](references/tool-catalogue.json) records the matching source contract. It does not prove deployment, permission consent, an installed handler or a successful account action.
 
-### Songs and tracks
-- `list_songs`
-- `get_song`
-- `update_song`
-- `batch_update_songs`
-- `list_focused_tracks`
-- `set_focus_override`
-- `clear_focus_overrides`
-- `get_track_metadata_state`
-- `clear_track_due_date`
-- `update_track_lyrics`
-- `update_track_notes`
-- `execute_track_metadata_action`
-- `get_track_bucket_memberships`
-- `add_track_bucket_membership`
-- `remove_track_bucket_membership`
-- `set_track_bucket_memberships`
-- `execute_track_bucket_membership_action`
-- `prepare_track_metadata_batch`
-- `execute_track_metadata_batch`
-- `get_track_edit_action_plan`
-- `get_track_edit_action_operation`
-- `cancel_track_edit_action_plan`
-
-### Buckets
-- `list_buckets`
-- `get_bucket`
-- `create_bucket`
-- `create_bucket_v2`
-- `get_bucket_hierarchy`
-- `set_bucket_parent`
-- `update_bucket`
-- `delete_bucket`
-- `list_bucket_members`
-- `list_bucket_invitations`
-- `get_bucket_sharing_status`
-- `get_bucket_property_status`
-- `prepare_bucket_member_invite`
-- `prepare_bucket_member_role`
-- `prepare_bucket_member_revocation`
-- `prepare_bucket_invitation_acceptance`
-- `prepare_bucket_leave`
-- `prepare_bucket_member_coverage_repair`
-- `prepare_bucket_share_import_retry`
-- `execute_bucket_member_action`
-- `prepare_set_bucket_tags`
-- `prepare_set_public_page_bucket_visibility`
-- `prepare_set_bucket_friends_audience`
-- `execute_bucket_property_action`
-
-### Tags
-- `list_tags`
-- `list_tag_categories`
-- `get_song_tags`
-- `assign_tags`
-- `remove_tag`
-- `create_tag`
-- `delete_tag`
-
-### Collaborator property tools
-- `get_collaborator_record`
-- `get_publisher_record`
-- `get_track_collaborator_properties`
-- `get_track_collaborator_state`
-- `get_collaborator_action_receipt`
-- `prepare_add_track_collaborator`
-- `prepare_update_track_collaborator`
-- `prepare_update_track_collaborator_splits`
-- `prepare_set_collaborator_export_permission`
-- `prepare_create_collaborator_record`
-- `prepare_update_collaborator_record`
-- `prepare_create_publisher_record`
-- `prepare_update_publisher_record`
-- `prepare_update_collaborator_metadata`
-- `prepare_update_publisher_metadata`
-- `execute_collaborator_action`
-- `execute_collaborator_metadata_action`
-
-### People roster and AI provenance
-- `list_artists`
-- `prepare_create_artist`
-- `prepare_update_artist`
-- `execute_artist_action`
-- `get_track_artist_state`
-- `prepare_add_track_artist`
-- `prepare_remove_track_artist`
-- `execute_track_artist_action`
-- `list_labels`
-- `prepare_create_label`
-- `prepare_update_label`
-- `prepare_delete_label`
-- `execute_label_action`
-- `list_pro_memberships`
-- `prepare_pro_membership_create`
-- `prepare_pro_membership_update`
-- `prepare_pro_membership_delete`
-- `execute_pro_membership_action`
-- `list_ai_service_presets`
-- `list_track_ai_collaborators`
-- `list_tracks_with_ai_collaborators`
-- `export_ai_provenance_for_tracks`
-- `get_collaborator_merge_preview`
-- `get_ai_collaborator_action_receipt`
-- `prepare_add_track_ai_collaborator`
-- `prepare_update_track_ai_collaborator`
-- `prepare_remove_track_ai_collaborator`
-- `prepare_merge_collaborators`
-- `execute_ai_collaborator_action`
-
-### Collaborators And Publishers
-- `list_collaborators`
-- `lookup_collaborator`
-- `get_song_collaborators`
-- `list_publishers`
-- `add_collaborator_to_song`
-- `remove_collaborator_from_song`
-- `share_with_collaborators`
-- `get_share_status`
-- `create_collaborator`
-- `update_collaborator`
-- `delete_collaborator`
-- `list_collaborator_deals`
-- `create_collaborator_deal`
-- `update_collaborator_deal`
-- `delete_collaborator_deal`
-- `create_publisher`
-- `update_publisher`
-- `delete_publisher`
-
-### Sharing
-- `create_share_page`
-- `list_shares`
-- `delete_share`
-- `export_split_sheet`
-- `list_public_shares`
-- `get_public_share`
-- `get_collaborator_share_status`
-- `prepare_collaborator_share`
-- `prepare_collaborator_share_revocation`
-- `prepare_public_share_update`
-- `prepare_public_share_revocation`
-- `execute_share_action`
-- `list_share_inbox`
-- `get_share_inbox_item`
-- `list_share_outbox`
-- `get_share_outbox_item`
-- `get_direct_share_delivery_status`
-- `prepare_accept_track_invitation`
-- `prepare_decline_track_invitation`
-- `prepare_leave_direct_share`
-- `prepare_resend_collaborator_invitation`
-- `prepare_revoke_collaborator_share`
-
-### Private playlists
-- `list_playlists`
-- `get_playlist`
-- `get_playlist_parameters`
-- `prepare_playlist_create`
-- `prepare_playlist_update`
-- `prepare_playlist_add_tracks`
-- `prepare_playlist_remove_tracks`
-- `prepare_playlist_replace_tracks`
-- `prepare_playlist_reorder_tracks`
-- `prepare_playlist_update_layout`
-- `prepare_playlist_delete`
-- `get_playlist_share`
-- `get_playlist_file_options`
-- `get_playlist_share_file_options`
-- `prepare_playlist_share_create`
-- `prepare_playlist_share_update`
-- `prepare_playlist_share_revoke`
-- `execute_playlist_action`
-
-### Friends, Track Offers and trusted operations
-- `list_track_offers`
-- `get_track_offer_relationships`
-- `get_track_offer_content`
-- `get_track_offer_playback`
-- `prepare_friend_designation`
-- `prepare_track_offer`
-- `prepare_track_offer_activation`
-- `prepare_track_offer_decline`
-- `prepare_track_offer_revocation`
-- `prepare_track_offer_sender_block`
-- `execute_track_offer_action`
-- `execute_friend_action`
-- `get_mcp_action_plan`
-- `get_mcp_operation`
-- `cancel_mcp_action_plan`
-- `cancel_mcp_operation`
-
-### Earnings
-- `import_royalty_earnings`
-
-### Comments
-- `list_comments`
-- `create_comment`
-- `update_comment`
-- `delete_comment`
-
-### Todos
-- `list_todos`
-- `create_todo`
-- `update_todo`
-- `delete_todo`
-
-### Library
-- `list_saved_views`
-- `get_recent_activity`
-- `list_workflow_definitions`
-- `get_subscription_status`
-- `get_library_stats`
-
-### Search
-- `search_comments`
-- `search_song_activity`
-
-- `get_share_activity`
-- `get_share_approval_state`
-- `prepare_share_approval_recipients`
-- `prepare_send_share_approval_request`
-- `prepare_resend_share_approval_request`
-- `execute_share_approval_action`
-- `get_share_approval_delivery_receipt`
+For new hosted and native families, read [parity workflows](references/parity-workflows.md) for the relevant lifecycle. Keep exact stable IDs, versions and the original idempotency key. An unavailable handler is an unfinished operation, not a completed action.
 
 ### Recipient review and media
 
@@ -602,32 +375,7 @@ Native actions require fresh `files.read`, `files.write`, `device.pair` or `sess
 
 Read `get_native_file_sync_status` with a new UUID key. Recover its original command with `get_native_file_sync_operation`. Status comes from the selected app; server delivery does not establish local file existence.
 
-Prepare pause, resume or retry with the exact project revision. Owner file preparation also requires the exact share revision. Recipient import takes an accepted direct assignment, accepted Bucket child or activated Offer identity and current access revision. The connected app uses its configured root. Never pass a path, open a folder picker or invent a local binding. Use `execute_native_file_sync_action` only with the saved reviewed plan and original key. Read the signed receipt before any retry. Project pause is not exact transfer cancellation. Do not report local files from an access or queued receipt.
-
-### Recipient and native tool reference
-
-- `list_mcp_devices`
-- `begin_mcp_device_pairing`
-- `get_mcp_device_pairing`
-- `revoke_mcp_device_pairing`
-- `get_native_file_sync_status`
-- `prepare_native_file_sync_pause`
-- `prepare_native_file_sync_resume`
-- `prepare_native_file_sync_retry`
-- `prepare_native_owner_share_files`
-- `prepare_native_recipient_import`
-- `execute_native_file_sync_action`
-- `get_native_file_sync_operation`
-- `prepare_public_recipient_connect`
-- `get_public_recipient_context`
-- `list_public_recipient_tracks`
-- `get_public_recipient_track`
-- `get_public_share_media`
-- `download_public_share_file`
-- `submit_public_recipient_approval`
-- `get_public_recipient_operation`
-- `submit_track_offer_feedback`
-- `get_track_offer_feedback_operation`
+Prepare pause, resume or retry with the exact project revision. Owner file preparation also requires the exact share revision. Recipient import takes an accepted direct assignment, accepted Bucket child or activated Offer identity and current access revision. The connected app uses its configured root. Never pass an arbitrary path or invent a local binding. Use an advertised native chooser handoff when selection is required; the human selects the location in the trusted app. Use `execute_native_file_sync_action` only with the saved reviewed plan and original key. Read the signed receipt before any retry. Project pause is not exact transfer cancellation. Do not report local files from an access or queued receipt.
 
 ## Response Formatting Rules
 1. Summarize results in natural language instead of dumping raw JSON.
@@ -641,7 +389,7 @@ Prepare pause, resume or retry with the exact project revision. Owner file prepa
 On first use, the client will prompt the user to authenticate with The Library in the browser. Tokens are scoped and stored by the client and server OAuth flow.
 
 ## Permissions
-Some operations require permissions enabled in The Library under `Settings > AI Agent Access`:
+Some operations require permissions enabled in The Library under `Settings > MCP access`:
 - `sharing`
 - `destructive_operations`
 - `bulk_operations`
@@ -661,4 +409,4 @@ Some operations require permissions enabled in The Library under `Settings > AI 
 - `pair_devices` with `device.pair`
 - `control_session` with `session.control`
 
-The additional groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Do not change permissions or reconnect on the user's behalf.
+The additional groups default to OFF. Enabling a group does not add its scope to an existing OAuth grant. The user must give fresh consent through the trusted authorization page. Explain the exact missing scopes and app permissions. The human completes OAuth or native consent; the agent never fabricates approval.
