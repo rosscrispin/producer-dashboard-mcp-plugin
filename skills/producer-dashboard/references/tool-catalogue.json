@@ -1,6 +1,6 @@
 {
   "release": "1.1.12",
-  "source_commit": "9a52818cfd53d04507dd2863be1829de4a2f1748",
+  "source_commit": "c5cad537c200debe8f5ef537bb6c78d7aadb3dbe",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
@@ -20,7 +20,6 @@
     "exports.read",
     "bulk.write",
     "destructive.write",
-    "analysis.write",
     "organization.write",
     "files.read",
     "files.write",
@@ -36,6 +35,7 @@
     "royalties.read",
     "royalties.write",
     "history.write",
+    "analysis.write",
     "backups.read",
     "backups.write",
     "public_pages.read",
@@ -16437,9 +16437,6 @@
             "type": "string",
             "format": "uuid"
           },
-          "edge_id": {
-            "$ref": "#/properties/operation_id"
-          },
           "folder_handle": {
             "type": "string",
             "minLength": 1,
@@ -16448,7 +16445,8 @@
           }
         },
         "required": [
-          "operation_id"
+          "operation_id",
+          "folder_handle"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -23439,7 +23437,7 @@
     },
     {
       "name": "batch_update_songs",
-      "description": "Update multiple songs at once. Uses the bulk update endpoint \u2014 much faster than calling update_song in a loop.",
+      "description": "Update multiple songs at once. Uses the bulk update endpoint — much faster than calling update_song in a loop.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -25031,7 +25029,7 @@
     },
     {
       "name": "get_share_status",
-      "description": "Check the sharing status of a song's collaborators \u2014 who has been shared with, pending invites, accepted, etc.",
+      "description": "Check the sharing status of a song's collaborators — who has been shared with, pending invites, accepted, etc.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -33983,7 +33981,7 @@
     },
     {
       "name": "create_share_page",
-      "description": "Create a share page (playlist link) for selected songs. Provide track_group_ids directly, OR set bucket_id or stages to auto-select songs. Optionally protect with a password (4\u2013128 chars) \u2014 recipients will be asked for it before they can view or download. Requires the sharing permission; filtered discovery also requires Library read access. The bounded selection supports up to 250 Tracks.",
+      "description": "Create a share page (playlist link) for selected songs. Provide track_group_ids directly, OR set bucket_id or stages to auto-select songs. Optionally protect with a password (4–128 chars) — recipients will be asked for it before they can view or download. Requires the sharing permission; filtered discovery also requires Library read access. The bounded selection supports up to 250 Tracks.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -34102,7 +34100,7 @@
             "type": "string",
             "minLength": 4,
             "maxLength": 128,
-            "description": "Optional password (4\u2013128 chars). When set, recipients must enter this to view or download the share. Password is hashed server-side \u2014 never returned in responses."
+            "description": "Optional password (4–128 chars). When set, recipients must enter this to view or download the share. Password is hashed server-side — never returned in responses."
           }
         },
         "additionalProperties": false,
