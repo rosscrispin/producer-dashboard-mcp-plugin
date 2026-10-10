@@ -77,6 +77,12 @@
               "prompt": "Show me who has access to my Releases Bucket, then prepare inviting Ari as a viewer. Stop for app approval.",
               "tools_triggered": "list_buckets, list_bucket_members, prepare_bucket_member_invite",
               "expected_behavior": "The plugin resolves the immutable Bucket ID, reads the bounded member state, resolves Ari's recipient identity, prepares the exact viewer invitation with a UUID idempotency key, and stops at the trusted app review. It never sends an invitation from chat text, reports pending membership as accepted, or claims local files were imported."
+            },
+            {
+              "description": "Choose a native import file without exposing a path or approving an effect.",
+              "prompt": "Open the trusted Library file chooser so I can select files for import, then report the selection.",
+              "tools_triggered": "choose_import_files, get_native_selection",
+              "expected_behavior": "The plugin uses the current paired device, root, and session bindings with a fresh UUID idempotency key. It returns only the signed queued, completed, cancelled, or failed selection projection and opaque file handles. It never accepts a filesystem path, adds approval_id, claims that import ran, or retries with a new key after an unknown result."
             }
           ],
           "negative": [
