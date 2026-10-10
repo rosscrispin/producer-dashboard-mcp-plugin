@@ -40,7 +40,7 @@ for (const prompt of Array.isArray(listing.defaultPrompt) ? listing.defaultPromp
 
 const positive = review?.test_cases?.positive;
 const negative = review?.test_cases?.negative;
-if (!Array.isArray(positive) || positive.length !== 6) fail("review.test_cases.positive must contain exactly six cases");
+if (!Array.isArray(positive) || positive.length !== 7) fail("review.test_cases.positive must contain exactly seven cases");
 if (!Array.isArray(negative) || negative.length !== 3) fail("review.test_cases.negative must contain exactly three cases");
 for (const [index, testCase] of [...positive, ...negative].entries()) {
   for (const field of ["description", "prompt"]) {
