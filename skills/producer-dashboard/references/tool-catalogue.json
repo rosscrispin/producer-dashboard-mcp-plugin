@@ -1,6 +1,6 @@
 {
   "release": "1.1.15",
-  "source_commit": "5986018fe6296e8408e3d952bd7a140d122099d6",
+  "source_commit": "467d8b37de69cd2c6ceb6821fccdfa66b5214ea7",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
