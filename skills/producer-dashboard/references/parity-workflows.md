@@ -20,7 +20,7 @@ Definition, taxonomy, saved-view and artwork actions use stable IDs and expected
 
 Use `list_mcp_devices` and `begin_mcp_device_pairing` for one exact capability set. Keep the original pairing key. The human completes consent in The Library. Read `get_mcp_device_pairing` before proceeding. Expired or unavailable pairing does not authorize a command.
 
-Native commands bind the current owner, client, grant, authorization nonce, environment, device, root generation, session and handler version. Recheck that binding when consuming a file handle and when returning a saved receipt. An account switch, changed root, revoked grant or expired context requires a new valid plan or consent.
+Native commands bind the current owner, client, grant, authorization nonce, environment, device, root generation, session and handler version. The device and pairing readers publish the server-owned `client_instance_id`, `root_id`, `root_generation`, `session_id`, and `session_version` tuple. Preserve it exactly. A missing field is unavailable, and a null client instance cannot authorize a paired command. Recheck that binding when consuming a file handle and when returning a saved receipt. An account switch, changed root, revoked grant or expired context requires a new valid plan or consent.
 
 Use the advertised native chooser to select a location. The human selects it in the trusted app. `start_local_inventory` and `continue_local_inventory` return bounded local evidence and opaque handles. Complete the snapshot before claiming complete local contents. Database metadata and transfer delivery state do not prove local files.
 

@@ -1,6 +1,6 @@
 {
-  "release": "1.1.13",
-  "source_commit": "7ecfb5f37cce7c0aac0c58c8bc82361a1a6c3ec5",
+  "release": "1.1.14",
+  "source_commit": "a1fff9a6ddc5f250d5a25e5a2784a09f0ff82a9e",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
