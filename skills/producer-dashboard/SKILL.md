@@ -371,7 +371,17 @@ Use `submit_track_offer_feedback` for one authorized Offer bounce with current O
 
 ### Connected app file services
 
-Native actions require fresh `files.read`, `files.write`, `device.pair` or `session.control` consent as stated by the tool and the matching enabled account policies. Existing grants do not expand. Use `list_mcp_devices`, `begin_mcp_device_pairing` and `get_mcp_device_pairing`. These readers publish the server-owned `client_instance_id`, `root_id`, `root_generation`, `session_id`, and `session_version` binding tuple. Preserve it exactly for follow-up actions. A missing binding field is unavailable. A null client instance is an explicit unbound state and cannot authorize paired actions. Never synthesize or reuse a binding. The human completes exact capability consent in the Library app. Use the exact pairing review for `revoke_mcp_device_pairing`.
+Native actions require fresh `files.read`, `files.write`, `device.pair` or `session.control` consent as stated by the tool and the matching enabled account policies. Existing grants do not expand. Use `list_mcp_devices`, `begin_mcp_device_pairing` and `get_mcp_device_pairing`. These readers publish the server-owned `client_instance_id`, `root_id`, `root_generation`, `session_id`, and `session_version` binding tuple. Preserve it exactly for follow-up actions. A missing binding field is unavailable. A null client instance is an explicit unbound state and cannot authorize paired actions. Never synthesize or reuse a binding. The human completes exact capability consent in the Library app. Use the exact pairing review for `revoke_mcp_device_pairing`. When no paired device is available, use `begin_mcp_device_pairing` with the requested capabilities and wait for the user to complete the returned trusted handoff. Open the returned `review_url` at `/mcp-device-pairing.html?handoff_id=...` or the returned `desktop_handoff_url`. Do not infer a device from an empty list, poll until one appears, or accept pairing from chat text.
+
+### Native selectors
+
+- `choose_import_files`
+- `choose_import_folder`
+- `choose_backup_destination`
+- `choose_backup_file`
+- `get_native_selection`
+
+Native selectors use the exact paired `device_id`, `root_id`, positive `root_generation`, `session_id`, positive `session_version`, and a fresh UUID `idempotency_key`. The chooser is a human file or folder selection. It does not approve a later import, backup, or restore effect. Read a selector with `get_native_selection` using the original command ID and idempotency key. Accept only the signed `queued`, `completed`, `cancelled`, or `failed` states. Receipts contain short-lived opaque handles and safe metadata only. Never provide or request an absolute path, `approval_id`, credential, or caller-created handle.
 
 Read `get_native_file_sync_status` with a new UUID key. Recover its original command with `get_native_file_sync_operation`. Status comes from the selected app; server delivery does not establish local file existence.
 
