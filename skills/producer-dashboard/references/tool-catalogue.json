@@ -1,6 +1,6 @@
 {
   "release": "1.1.16",
-  "source_commit": "cc9aee1481157d9f11146aad6ade163b4b6e82aa",
+  "source_commit": "0a179d791b805fe6663a8eac81497bc79385c0c2",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
@@ -41483,7 +41483,6 @@
         },
         "required": [
           "device_id",
-          "command_id",
           "idempotency_key"
         ],
         "additionalProperties": false,
