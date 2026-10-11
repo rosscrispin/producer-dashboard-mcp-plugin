@@ -387,6 +387,12 @@ Native selectors use the exact paired `device_id`, `root_id`, positive `root_gen
 
 Read `get_native_file_sync_status` with a new UUID key. Recover its original command with `get_native_file_sync_operation`. Status comes from the selected app; server delivery does not establish local file existence.
 
+For local inventory, retain the `operation_id` and original `idempotency_key` from `start_local_inventory` or `continue_local_inventory`. Recover a queued or incomplete scan with `get_local_inventory_operation`. This is a bounded signed read. It does not start a second scan, accept a new key, or authorize a changed device, root, session or account.
+
+For backup status, `get_local_backup_schedule` returns either the signed schedule or its original pending operation. Use `get_library_backup_operation` with the original `operation_id` and `idempotency_key` when an operation ID is returned. If no operation ID is present, repeat the schedule read with the same `device_id` and key. Neither path sends another native command. Keep backup receipt state separate from the schedule effect.
+
+For player reads, `get_library_player_state` queues a signed read for the exact paired binding. Retain its `operation_id` and original UUID key, then call `get_paired_ui_session_operation` with both until the read completes. The reader validates the original key and never sends the player read again. Treat queued, accepted, claimed and running states as pending. Report player fields only from the completed signed result; audible confirmation remains a separate human check.
+
 Prepare pause, resume or retry with the exact project revision. Owner file preparation also requires the exact share revision. Recipient import takes an accepted direct assignment, accepted Bucket child or activated Offer identity and current access revision. The connected app uses its configured root. Never pass an arbitrary path or invent a local binding. Use an advertised native chooser handoff when selection is required; the human selects the location in the trusted app. Use `execute_native_file_sync_action` only with the saved reviewed plan and original key. Read the signed receipt before any retry. Project pause is not exact transfer cancellation. Do not report local files from an access or queued receipt.
 
 ## Response Formatting Rules

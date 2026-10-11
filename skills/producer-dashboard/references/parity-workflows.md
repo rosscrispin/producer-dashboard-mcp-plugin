@@ -24,7 +24,7 @@ Initial account authentication remains a browser OAuth flow. For the current des
 
 Native commands bind the current owner, client, grant, authorization nonce, environment, device, root generation, session and handler version. The device and pairing readers publish the server-owned `client_instance_id`, `root_id`, `root_generation`, `session_id`, and `session_version` tuple. Preserve it exactly. A missing field is unavailable, and a null client instance cannot authorize a paired command. Recheck that binding when consuming a file handle and when returning a saved receipt. An account switch, changed root, revoked grant or expired context requires a new valid plan or consent.
 
-Use the advertised native chooser to select a location. The human selects it in the trusted app. `start_local_inventory` and `continue_local_inventory` return bounded local evidence and opaque handles. Complete the snapshot before claiming complete local contents. Database metadata and transfer delivery state do not prove local files.
+Use the advertised native chooser to select a location. The human selects it in the trusted app. `start_local_inventory` and `continue_local_inventory` return bounded local evidence and opaque handles. A queued inventory result is recovered with `get_local_inventory_operation({ operation_id, idempotency_key })` using the exact original operation ID and UUID key. This reader does not start another scan or replay the command. It checks the original account, grant, device, root, session, action and current authority binding. A missing, stale or mismatched receipt remains unresolved. Complete the snapshot before claiming complete local contents. Database metadata and transfer delivery state do not prove local files.
 
 ## Import, assignment, open and voice memos
 
@@ -45,6 +45,8 @@ Plan, run and apply are separate steps. Applying metadata needs the action's Tra
 Use the canonical Library Backup service and trusted native folder selection. A backup is complete only after independent decoding, positive byte evidence and receipt checks. Retain its opaque artifact handle and exact binding.
 
 Preview restore against current inventory and versions. Keep the exact restore plan, choices and hash. Execute only after required review. Preserve originals and recovery evidence. Schedule reads and updates use their own current backup authority; changing a schedule does not prove a later backup ran.
+
+`get_local_backup_schedule` returns either the signed schedule or the original pending operation. If it returns an operation ID, read it with `get_library_backup_operation({ operation_id, idempotency_key })` using the original UUID key. If the schedule read has no operation ID, repeat that same schedule read with the original `device_id` and key to recover the existing command. Neither recovery path sends another native command. Report the signed state and receipt separately from the schedule effect.
 
 ## Automations
 
@@ -69,6 +71,8 @@ Royalty reads keep currencies and exact decimal values separate. Read the deleti
 Use the current paired renderer and client instance. Player changes require the current player revision. Selection, saved-view application, playlist opening, clipboard and diagnostics use closed application commands. They are not arbitrary scripts or navigation URLs.
 
 Local playback and local queue entries require verified local-file authority. Public-share and Track Offer playback use their separate current recipient context and media handoff. Do not fall back to local audio if remote authority fails. A returned media handle is not audible playback; verify the player start receipt and let the human confirm sound when needed.
+
+`get_library_player_state` queues a signed read for the exact paired binding. Retain its `operation_id` and original UUID key, then call `get_paired_ui_session_operation` with both until the read completes. The reader can recover the native receipt and, only when the native reader reports not found, the matching generic operation ledger; it validates the original key and never sends the player read again. Treat queued, accepted, claimed and running states as pending. Report player fields only from the completed signed result, and keep audible confirmation as a separate human check.
 
 Undo and redo retain the canonical receipt and expected current versions. Reject superseded or external effects that cannot be safely reversed. Diagnostics use the fixed redacted catalogue and exact reviewed hash. Paths, credentials and raw private logs stay out of chat results.
 

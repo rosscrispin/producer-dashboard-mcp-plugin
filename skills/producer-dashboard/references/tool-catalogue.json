@@ -1,6 +1,6 @@
 {
-  "release": "1.1.15",
-  "source_commit": "467d8b37de69cd2c6ceb6821fccdfa66b5214ea7",
+  "release": "1.1.16",
+  "source_commit": "cc9aee1481157d9f11146aad6ade163b4b6e82aa",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
@@ -912,6 +912,72 @@
           "file_id",
           "file_handle",
           "file_revision",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "files.read",
+              "device.pair",
+              "session.read"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "files.read",
+        "additionalScopes": [
+          "device.pair",
+          "session.read"
+        ],
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "get_local_inventory_operation",
+      "description": "Read the exact original local inventory operation without sending another command. Checks the original account, grant, device, root, session, action and idempotency key.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/operation_id"
+          }
+        },
+        "required": [
+          "operation_id",
           "idempotency_key"
         ],
         "additionalProperties": false,
@@ -5006,7 +5072,7 @@
     },
     {
       "name": "get_local_backup_schedule",
-      "description": "Read the signed schedule from the exact paired desktop.",
+      "description": "Read the signed schedule from the exact paired desktop. If the desktop is still processing, retain the returned operation_id and idempotency_key and read that original operation. If operation_id is missing, repeat this read with the same device_id and idempotency_key to recover the existing command without enqueueing another one.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -17153,7 +17219,7 @@
     },
     {
       "name": "get_library_player_state",
-      "description": "Queue a read of the exact paired player state before controlling playback. Read the returned operation before issuing a control.",
+      "description": "Queue a read of the exact paired player state before controlling playback. Read get_paired_ui_session_operation with its original operation_id and idempotency_key until the signed read completes. This read needs no effect approval.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -18008,6 +18074,9 @@
           "operation_id": {
             "type": "string",
             "format": "uuid"
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/operation_id"
           }
         },
         "required": [
