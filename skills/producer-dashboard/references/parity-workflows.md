@@ -48,6 +48,8 @@ Preview restore against current inventory and versions. Keep the exact restore p
 
 `get_local_backup_schedule` returns either the signed schedule or the original pending operation. If it returns an operation ID, read it with `get_library_backup_operation({ operation_id, idempotency_key })` using the original UUID key. If the schedule read has no operation ID, repeat that same schedule read with the original `device_id` and key to recover the existing command. Neither recovery path sends another native command. Report the signed state and receipt separately from the schedule effect.
 
+Use the updated native app with a bounded backup schedule read. An overdue read returns `expired`, `needs_attention`, `command_expired` and no schedule result. A signed result-free expiry failure records failure only. Completed receipts remain available for recovery. Backup mutations keep their existing unknown-outcome rules; read expiry is not permission to repeat a backup write. A native timeout cannot establish the current schedule. The folder chooser, completed signed receipt and physical backup checks remain required for later effects.
+
 ## Automations
 
 Read the automation catalogue before choosing triggers or effects. Work through draft, version, publish and activation. Keep draft versions and the frozen effect selection. Dry tests and live tests are distinct; a dry result does not establish delivery or a file effect.
