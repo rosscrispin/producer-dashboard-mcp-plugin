@@ -82,7 +82,7 @@
               "description": "Choose a native import file without exposing a path or approving an effect.",
               "prompt": "Open the trusted Library file chooser so I can select files for import, then report the selection.",
               "tools_triggered": "choose_import_files, get_native_selection",
-              "expected_behavior": "The plugin uses the current paired device, root, and session bindings with a fresh UUID idempotency key. It returns only the signed queued, completed, cancelled, or failed selection projection and opaque file handles. It never accepts a filesystem path, adds approval_id, claims that import ran, or retries with a new key after an unknown result."
+              "expected_behavior": "The plugin uses the current paired device, root, and session bindings with a fresh UUID idempotency key. It returns only the signed queued, completed, cancelled, failed, expired, or unknown selection projection. Only completed can provide opaque file handles; expired, unknown, and command_expired are result-free. It never accepts a filesystem path, adds approval_id, claims that import ran, opens a second chooser for an unknown outcome, or retries with a new key until the prior selector is terminal."
             }
           ],
           "negative": [
