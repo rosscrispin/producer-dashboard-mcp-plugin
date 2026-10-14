@@ -1,6 +1,5 @@
 {
-  "release": "1.1.19",
-  "source_commit": "528bd8b2c29e7ee0c9728ea9125ade99c4e2c27b",
+  "release": "1.1.20",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
@@ -20,6 +19,7 @@
     "exports.read",
     "bulk.write",
     "destructive.write",
+    "analysis.write",
     "organization.write",
     "files.read",
     "files.write",
@@ -35,7 +35,6 @@
     "royalties.read",
     "royalties.write",
     "history.write",
-    "analysis.write",
     "backups.read",
     "backups.write",
     "public_pages.read",
@@ -49,7 +48,7 @@
   "tools": [
     {
       "name": "query_tracks_scoped",
-      "description": "Read owned or explicitly shared logical Tracks with bounded filters and page coverage. Recorded file metadata never proves local file presence.",
+      "description": "Read logical Tracks, optionally in one exact Bucket ID or name. Returns Bucket identity and bounded current contents. Recorded files never prove local presence; use Track-directory inventory for actual files.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -61,12 +60,35 @@
             ],
             "default": "owned_record"
           },
+          "bucket_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bucket_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
           "fields": {
             "type": "array",
             "items": {
               "type": "string",
-              "minLength": 1,
-              "maxLength": 180
+              "enum": [
+                "id",
+                "song_name",
+                "display_name",
+                "stage",
+                "workflow_state",
+                "artwork_url",
+                "artwork_attribution",
+                "file_summary",
+                "recorded_files",
+                "sync_status",
+                "custom_values",
+                "is_shared",
+                "bucket_ids",
+                "record_scope"
+              ]
             },
             "maxItems": 100
           },
@@ -121,13 +143,12 @@
             "maxItems": 2
           },
           "track_id": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/properties/bucket_id"
           },
           "track_ids": {
             "type": "array",
             "items": {
-              "$ref": "#/properties/track_id"
+              "$ref": "#/properties/bucket_id"
             },
             "maxItems": 500
           },
@@ -212,8 +233,22 @@
             "type": "array",
             "items": {
               "type": "string",
-              "minLength": 1,
-              "maxLength": 180
+              "enum": [
+                "id",
+                "song_name",
+                "display_name",
+                "stage",
+                "workflow_state",
+                "artwork_url",
+                "artwork_attribution",
+                "file_summary",
+                "recorded_files",
+                "sync_status",
+                "custom_values",
+                "is_shared",
+                "bucket_ids",
+                "record_scope"
+              ]
             },
             "maxItems": 100
           }
@@ -290,12 +325,35 @@
             ],
             "default": "owned_record"
           },
+          "bucket_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bucket_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
           "fields": {
             "type": "array",
             "items": {
               "type": "string",
-              "minLength": 1,
-              "maxLength": 180
+              "enum": [
+                "id",
+                "song_name",
+                "display_name",
+                "stage",
+                "workflow_state",
+                "artwork_url",
+                "artwork_attribution",
+                "file_summary",
+                "recorded_files",
+                "sync_status",
+                "custom_values",
+                "is_shared",
+                "bucket_ids",
+                "record_scope"
+              ]
             },
             "maxItems": 100
           },
@@ -434,12 +492,34 @@
             ],
             "default": "owned_record"
           },
+          "bucket_id": {
+            "$ref": "#/properties/snapshot_id"
+          },
+          "bucket_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
           "fields": {
             "type": "array",
             "items": {
               "type": "string",
-              "minLength": 1,
-              "maxLength": 180
+              "enum": [
+                "id",
+                "song_name",
+                "display_name",
+                "stage",
+                "workflow_state",
+                "artwork_url",
+                "artwork_attribution",
+                "file_summary",
+                "recorded_files",
+                "sync_status",
+                "custom_values",
+                "is_shared",
+                "bucket_ids",
+                "record_scope"
+              ]
             },
             "maxItems": 100
           },
@@ -686,7 +766,7 @@
     },
     {
       "name": "start_local_inventory",
-      "description": "Start a bounded read-only local catalogue scan on the exact paired device and root. Results are physical evidence only for the snapshot lifetime.",
+      "description": "Scan each selected Track directory recursively, including docs, video and future subdirectories. Returns safe relative paths, type, size, SHA256 and opaque handles. Complete coverage needs all pages and no unknown/unreadable files. Requires the updated paired desktop; no file mutation.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -708,6 +788,11 @@
             },
             "maxItems": 250
           },
+          "scan_scope": {
+            "type": "string",
+            "const": "track_tree",
+            "default": "track_tree"
+          },
           "file_filter": {
             "type": "object",
             "properties": {
@@ -717,6 +802,9 @@
                   "bounce",
                   "project",
                   "stem",
+                  "video",
+                  "document",
+                  "other",
                   "any"
                 ]
               },
@@ -14296,7 +14384,7 @@
     },
     {
       "name": "plan_selected_file_import",
-      "description": "Prepare an exact selected-file import from trusted native handles.",
+      "description": "Inspect the exact native file selection, then prepare its import review. If inspection is queued, repeat identical arguments and the original key to read that inspection; this never imports files.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -31645,6 +31733,439 @@
       }
     },
     {
+      "name": "choose_import_files",
+      "description": "Open the trusted native file chooser for import. Returns short-lived opaque file handles and never accepts or exposes a filesystem path.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "root_id": {
+            "$ref": "#/properties/device_id"
+          },
+          "root_generation": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "session_id": {
+            "$ref": "#/properties/device_id"
+          },
+          "session_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/device_id"
+          }
+        },
+        "required": [
+          "device_id",
+          "root_id",
+          "root_generation",
+          "session_id",
+          "session_version",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "files.read",
+              "device.pair",
+              "session.read"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "files.read",
+        "additionalScopes": [
+          "device.pair",
+          "session.read"
+        ],
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "choose_import_folder",
+      "description": "Open the trusted native folder chooser for import. The chooser returns an opaque folder handle and does not approve an import effect.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "root_id": {
+            "$ref": "#/properties/device_id"
+          },
+          "root_generation": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "session_id": {
+            "$ref": "#/properties/device_id"
+          },
+          "session_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/device_id"
+          }
+        },
+        "required": [
+          "device_id",
+          "root_id",
+          "root_generation",
+          "session_id",
+          "session_version",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "files.read",
+              "device.pair",
+              "session.read"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "files.read",
+        "additionalScopes": [
+          "device.pair",
+          "session.read"
+        ],
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "choose_backup_destination",
+      "description": "Open the trusted native backup destination chooser. The selection is a short-lived opaque handle; it does not save a backup or approve a backup effect.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "root_id": {
+            "$ref": "#/properties/device_id"
+          },
+          "root_generation": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "session_id": {
+            "$ref": "#/properties/device_id"
+          },
+          "session_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/device_id"
+          }
+        },
+        "required": [
+          "device_id",
+          "root_id",
+          "root_generation",
+          "session_id",
+          "session_version",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "backups.write",
+              "device.pair",
+              "session.read"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "backups.write",
+        "additionalScopes": [
+          "device.pair",
+          "session.read"
+        ],
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "choose_backup_file",
+      "description": "Open the trusted native backup file chooser. Returns an opaque backup handle for a later read or restore preview.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "root_id": {
+            "$ref": "#/properties/device_id"
+          },
+          "root_generation": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "session_id": {
+            "$ref": "#/properties/device_id"
+          },
+          "session_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/device_id"
+          }
+        },
+        "required": [
+          "device_id",
+          "root_id",
+          "root_generation",
+          "session_id",
+          "session_version",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "backups.read",
+              "device.pair",
+              "session.read"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "backups.read",
+        "additionalScopes": [
+          "device.pair",
+          "session.read"
+        ],
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "get_native_selection",
+      "description": "Read the signed result of the original native chooser command. Keep the original idempotency key. A cancelled, failed, expired or unknown selection is result-free, and this read never reopens the chooser.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "command_id": {
+            "$ref": "#/properties/device_id"
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/device_id"
+          }
+        },
+        "required": [
+          "device_id",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "files.read",
+              "device.pair",
+              "session.read"
+            ]
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "backups.read",
+              "device.pair",
+              "session.read"
+            ]
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "backups.write",
+              "device.pair",
+              "session.read"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "files.read",
+        "additionalScopes": [
+          "device.pair",
+          "session.read"
+        ],
+        "alternativeScopeSets": [
+          [
+            "backups.read",
+            "device.pair",
+            "session.read"
+          ],
+          [
+            "backups.write",
+            "device.pair",
+            "session.read"
+          ]
+        ],
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
       "name": "prepare_public_recipient_connect",
       "description": "Open a public share in The Library so its recipient can unlock it and choose Connect. This intent grants no access and never returns a password or recipient credential.",
       "inputSchema": {
@@ -41127,439 +41648,7 @@
           "openWorldHint": false
         }
       }
-    },
-    {
-      "name": "choose_import_files",
-      "description": "Open the trusted native file chooser for import. Returns short-lived opaque file handles and never accepts or exposes a filesystem path.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "device_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "root_id": {
-            "$ref": "#/properties/device_id"
-          },
-          "root_generation": {
-            "type": "integer",
-            "exclusiveMinimum": 0
-          },
-          "session_id": {
-            "$ref": "#/properties/device_id"
-          },
-          "session_version": {
-            "type": "integer",
-            "exclusiveMinimum": 0
-          },
-          "idempotency_key": {
-            "$ref": "#/properties/device_id"
-          }
-        },
-        "required": [
-          "device_id",
-          "root_id",
-          "root_generation",
-          "session_id",
-          "session_version",
-          "idempotency_key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "files.read",
-              "device.pair",
-              "session.read"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "files.read",
-        "additionalScopes": [
-          "device.pair",
-          "session.read"
-        ],
-        "annotations": {
-          "readOnlyHint": true,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
-    },
-    {
-      "name": "choose_import_folder",
-      "description": "Open the trusted native folder chooser for import. The chooser returns an opaque folder handle and does not approve an import effect.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "device_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "root_id": {
-            "$ref": "#/properties/device_id"
-          },
-          "root_generation": {
-            "type": "integer",
-            "exclusiveMinimum": 0
-          },
-          "session_id": {
-            "$ref": "#/properties/device_id"
-          },
-          "session_version": {
-            "type": "integer",
-            "exclusiveMinimum": 0
-          },
-          "idempotency_key": {
-            "$ref": "#/properties/device_id"
-          }
-        },
-        "required": [
-          "device_id",
-          "root_id",
-          "root_generation",
-          "session_id",
-          "session_version",
-          "idempotency_key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "files.read",
-              "device.pair",
-              "session.read"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "files.read",
-        "additionalScopes": [
-          "device.pair",
-          "session.read"
-        ],
-        "annotations": {
-          "readOnlyHint": true,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
-    },
-    {
-      "name": "choose_backup_destination",
-      "description": "Open the trusted native backup destination chooser. The selection is a short-lived opaque handle; it does not save a backup or approve a backup effect.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "device_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "root_id": {
-            "$ref": "#/properties/device_id"
-          },
-          "root_generation": {
-            "type": "integer",
-            "exclusiveMinimum": 0
-          },
-          "session_id": {
-            "$ref": "#/properties/device_id"
-          },
-          "session_version": {
-            "type": "integer",
-            "exclusiveMinimum": 0
-          },
-          "idempotency_key": {
-            "$ref": "#/properties/device_id"
-          }
-        },
-        "required": [
-          "device_id",
-          "root_id",
-          "root_generation",
-          "session_id",
-          "session_version",
-          "idempotency_key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "backups.write",
-              "device.pair",
-              "session.read"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "backups.write",
-        "additionalScopes": [
-          "device.pair",
-          "session.read"
-        ],
-        "annotations": {
-          "readOnlyHint": true,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
-    },
-    {
-      "name": "choose_backup_file",
-      "description": "Open the trusted native backup file chooser. Returns an opaque backup handle for a later read or restore preview.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "device_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "root_id": {
-            "$ref": "#/properties/device_id"
-          },
-          "root_generation": {
-            "type": "integer",
-            "exclusiveMinimum": 0
-          },
-          "session_id": {
-            "$ref": "#/properties/device_id"
-          },
-          "session_version": {
-            "type": "integer",
-            "exclusiveMinimum": 0
-          },
-          "idempotency_key": {
-            "$ref": "#/properties/device_id"
-          }
-        },
-        "required": [
-          "device_id",
-          "root_id",
-          "root_generation",
-          "session_id",
-          "session_version",
-          "idempotency_key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "backups.read",
-              "device.pair",
-              "session.read"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "backups.read",
-        "additionalScopes": [
-          "device.pair",
-          "session.read"
-        ],
-        "annotations": {
-          "readOnlyHint": true,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
-    },
-    {
-      "name": "get_native_selection",
-      "description": "Read the signed result of the original native chooser command. Keep the original idempotency key. A cancelled or failed selection is not success, and this read never reopens the chooser.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "device_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "command_id": {
-            "$ref": "#/properties/device_id"
-          },
-          "idempotency_key": {
-            "$ref": "#/properties/device_id"
-          }
-        },
-        "required": [
-          "device_id",
-          "idempotency_key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "files.read",
-              "device.pair",
-              "session.read"
-            ]
-          },
-          {
-            "type": "oauth2",
-            "scopes": [
-              "backups.read",
-              "device.pair",
-              "session.read"
-            ]
-          },
-          {
-            "type": "oauth2",
-            "scopes": [
-              "backups.write",
-              "device.pair",
-              "session.read"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "files.read",
-        "additionalScopes": [
-          "device.pair",
-          "session.read"
-        ],
-        "alternativeScopeSets": [
-          [
-            "backups.read",
-            "device.pair",
-            "session.read"
-          ],
-          [
-            "backups.write",
-            "device.pair",
-            "session.read"
-          ]
-        ],
-        "annotations": {
-          "readOnlyHint": true,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
     }
-  ]
+  ],
+  "source_commit": "903bc44470dcfa29284e5ecc637497b4362e16af"
 }

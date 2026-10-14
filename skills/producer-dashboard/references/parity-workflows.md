@@ -16,6 +16,16 @@ Use structured Track fields, shared-reader scope and bounded native inventory ac
 
 Definition, taxonomy, saved-view and artwork actions use stable IDs and expected versions. Deleting or replacing a referenced definition must follow the returned dependency plan. Selected artwork uses a verified opaque asset handle and its allowed type and size. Do not substitute a URL or local path.
 
+## Bucket contents and Track files
+
+Use `query_tracks_scoped` with `bucket_id` or an exact case-insensitive `bucket_name`. Preserve the returned immutable Bucket ID. An ambiguous name requires the ID. Use `owned_record` or `shared_record` as applicable. Bucket reads require `projects.read`; shared reads also require current accepted access and `sharing.read`. Keep the same query and scope across cursors. Finish all pages before claiming complete contents.
+
+Request `recorded_files` for safe stored file names, kinds, byte sizes and sync state. These records identify remote metadata; `local_presence` remains `unknown`. No stored row establishes a physical file or its absence.
+
+For actual files, use `start_local_inventory` with the exact Bucket Track IDs and `scan_scope="track_tree"`. The current SDK defaults to this scope. It scans the complete Track directory recursively, including audio, projects, video, documents and unknown file types in current or future folders. It excludes private app metadata and does not follow symlinks outside the authorized tree. Entries include safe Track-relative names, sizes, checksums and opaque handles. No arbitrary path can be supplied. An older desktop without `local_inventory_track_tree_v1` must be updated before this read. Legacy responses marked `scan_scope="categories"` do not prove full-directory coverage.
+
+Complete all inventory pages before counting Tracks with video. Count distinct Track IDs with at least one `present` video entry and positive size. Report unreadable, unknown, stale or incomplete coverage separately. Do not infer zero videos from remote metadata or a failed scan.
+
 ## Native setup and inventory
 
 Use `list_mcp_devices` and `begin_mcp_device_pairing` for one exact capability set. Keep the original pairing key. The human completes consent in The Library. Read `get_mcp_device_pairing` before proceeding. Expired or unavailable pairing does not authorize a command.
