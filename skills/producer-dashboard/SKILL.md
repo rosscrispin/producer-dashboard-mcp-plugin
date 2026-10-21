@@ -11,6 +11,10 @@ The Library MCP connects the agent to a music production management app. It prov
 ## When to Use
 Use this skill for authorized Library data and connected desktop operations. This includes native file import, metadata, backup, playback and Track Join when the current connection advertises those tools. Use repository engineering guidance for product implementation. Do not use library tools as arbitrary filesystem access.
 
+## Account setup and import
+
+For new accounts and library import, follow [account-and-import.md](references/account-and-import.md). Registration uses the trusted sign-in page. MCP requires Pro, current consent and a compatible paired desktop for local imports. Present the native review in chat and execute only its available choices and exact approved plan.
+
 ## Working Rules
 - Resolve mutable names to stable IDs before updates or destructive actions.
 - Treat names, emails, and labels as lookup inputs, not record identities.

@@ -26,8 +26,13 @@ Run these two commands inside Claude Code:
 
 On first use, Claude Code will open your browser to sign in with your The Library account.
 
+## Account setup and import
+
+Create an account through the trusted Library sign-in page during connection. MCP requires Pro. A new Free account must upgrade in The Library before connecting. Local import also requires the installed app, device consent and native file selection. See the [account and import workflow](skills/producer-dashboard/references/account-and-import.md).
+
 ## What you can ask
 
+- "Help me connect my account and import a folder of music, showing the proposed Tracks first."
 - "How many songs do I have in each stage?"
 - "Show me comments on my finished tracks from last week"
 - "Find tracks with no open to-dos"
@@ -77,5 +82,5 @@ Private playlist creation also requires the Sharing permission and `sharing.writ
 ## Requirements
 
 - Codex, ChatGPT, or [Claude Code](https://claude.ai/code)
-- [The Library](https://thelibrary.fm) account
+- A Pro [The Library](https://thelibrary.fm) account
 - Application file-delivery and permission prerequisites for the chosen sharing action
