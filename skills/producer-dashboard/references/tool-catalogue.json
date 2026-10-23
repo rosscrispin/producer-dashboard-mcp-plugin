@@ -1,5 +1,5 @@
 {
-  "release": "1.1.25",
+  "release": "1.1.26",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
@@ -1514,7 +1514,7 @@
     },
     {
       "name": "install_automation",
-      "description": "Prepare installation of one exact template version and configuration. Complete the returned trusted review before execution.",
+      "description": "Prepare installation of one exact released system default version and configuration. Complete the returned trusted review before execution.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -42047,5 +42047,5 @@
       }
     }
   ],
-  "source_commit": "db2359e75a85e63768fa60fa4c16f148ffcf925d"
+  "source_commit": "1f28054dba78e48f1f6809660f79056a41a17e12"
 }
