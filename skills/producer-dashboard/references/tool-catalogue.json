@@ -1,5 +1,5 @@
 {
-  "release": "1.1.26",
+  "release": "1.1.27",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
@@ -1513,6 +1513,124 @@
       }
     },
     {
+      "name": "preview_automation_default_update",
+      "description": "Read a redacted, owner-scoped preview for updating one installed system default. Preserve its impact hash for a later reviewed write.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "automation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "catalogue_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          }
+        },
+        "required": [
+          "automation_id",
+          "catalogue_version"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "automations.read"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "automations.read",
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "preview_automation_default_reset",
+      "description": "Read a redacted, owner-scoped preview for resetting one installed system default. Reset clears resolved slots and pauses the default.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "automation_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "automation_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "automations.read"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "automations.read",
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
       "name": "install_automation",
       "description": "Prepare installation of one exact released system default version and configuration. Complete the returned trusted review before execution.",
       "inputSchema": {
@@ -2222,6 +2340,215 @@
     {
       "name": "restore_automation",
       "description": "Prepare restoration of the exact deleted Automation. Recheck the current published effects and grant.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "automation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expected_state_revision": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/automation_id"
+          }
+        },
+        "required": [
+          "automation_id",
+          "expected_state_revision",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "automations.write"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "automations.write",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "apply_automation_default_update",
+      "description": "Prepare a reviewed system-default update from one exact catalogue version and impact hash. A stale state or changed preview stops the write.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "automation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expected_state_revision": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "catalogue_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "impact_hash": {
+            "$ref": "#/properties/expected_state_revision"
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/automation_id"
+          }
+        },
+        "required": [
+          "automation_id",
+          "expected_state_revision",
+          "catalogue_version",
+          "impact_hash",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "automations.write"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "automations.write",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "reset_automation_default",
+      "description": "Prepare a reviewed reset of one system default from the latest catalogue entry. The exact preview hash and state revision are required.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "automation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expected_state_revision": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "impact_hash": {
+            "$ref": "#/properties/expected_state_revision"
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/automation_id"
+          }
+        },
+        "required": [
+          "automation_id",
+          "expected_state_revision",
+          "impact_hash",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "automations.write"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "automations.write",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "customize_automation_default",
+      "description": "Prepare a reviewed copy of one system default as a separate inactive user-owned draft. The source default remains unchanged.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -23664,7 +23991,7 @@
     },
     {
       "name": "batch_update_songs",
-      "description": "Update multiple songs at once. Uses the bulk update endpoint \u2014 much faster than calling update_song in a loop.",
+      "description": "Update multiple songs at once. Uses the bulk update endpoint — much faster than calling update_song in a loop.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -25256,7 +25583,7 @@
     },
     {
       "name": "get_share_status",
-      "description": "Check the sharing status of a song's collaborators \u2014 who has been shared with, pending invites, accepted, etc.",
+      "description": "Check the sharing status of a song's collaborators — who has been shared with, pending invites, accepted, etc.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -34641,7 +34968,7 @@
     },
     {
       "name": "create_share_page",
-      "description": "Create a share page (playlist link) for selected songs. Provide track_group_ids directly, OR set bucket_id or stages to auto-select songs. Optionally protect with a password (4\u2013128 chars) \u2014 recipients will be asked for it before they can view or download. Requires the sharing permission; filtered discovery also requires Library read access. The bounded selection supports up to 250 Tracks.",
+      "description": "Create a share page (playlist link) for selected songs. Provide track_group_ids directly, OR set bucket_id or stages to auto-select songs. Optionally protect with a password (4–128 chars) — recipients will be asked for it before they can view or download. Requires the sharing permission; filtered discovery also requires Library read access. The bounded selection supports up to 250 Tracks.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -34760,7 +35087,7 @@
             "type": "string",
             "minLength": 4,
             "maxLength": 128,
-            "description": "Optional password (4\u2013128 chars). When set, recipients must enter this to view or download the share. Password is hashed server-side \u2014 never returned in responses."
+            "description": "Optional password (4–128 chars). When set, recipients must enter this to view or download the share. Password is hashed server-side — never returned in responses."
           }
         },
         "additionalProperties": false,
@@ -41718,334 +42045,7 @@
           "openWorldHint": false
         }
       }
-    },
-    {
-      "name": "preview_automation_default_update",
-      "description": "Read a redacted, owner-scoped preview for updating one installed system default. Preserve its impact hash for a later reviewed write.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "automation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "catalogue_version": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1000000
-          }
-        },
-        "required": [
-          "automation_id",
-          "catalogue_version"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "automations.read"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "automations.read",
-        "annotations": {
-          "readOnlyHint": true,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
-    },
-    {
-      "name": "preview_automation_default_reset",
-      "description": "Read a redacted, owner-scoped preview for resetting one installed system default. Reset clears resolved slots and pauses the default.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "automation_id": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "automation_id"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "automations.read"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "automations.read",
-        "annotations": {
-          "readOnlyHint": true,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
-    },
-    {
-      "name": "apply_automation_default_update",
-      "description": "Prepare a reviewed system-default update from one exact catalogue version and impact hash. A stale state or changed preview stops the write.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "automation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "expected_state_revision": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
-          },
-          "catalogue_version": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1000000
-          },
-          "impact_hash": {
-            "$ref": "#/properties/expected_state_revision"
-          },
-          "idempotency_key": {
-            "$ref": "#/properties/automation_id"
-          }
-        },
-        "required": [
-          "automation_id",
-          "expected_state_revision",
-          "catalogue_version",
-          "impact_hash",
-          "idempotency_key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "automations.write"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "automations.write",
-        "annotations": {
-          "readOnlyHint": false,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
-    },
-    {
-      "name": "reset_automation_default",
-      "description": "Prepare a reviewed reset of one system default from the latest catalogue entry. The exact preview hash and state revision are required.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "automation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "expected_state_revision": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
-          },
-          "impact_hash": {
-            "$ref": "#/properties/expected_state_revision"
-          },
-          "idempotency_key": {
-            "$ref": "#/properties/automation_id"
-          }
-        },
-        "required": [
-          "automation_id",
-          "expected_state_revision",
-          "impact_hash",
-          "idempotency_key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "automations.write"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "automations.write",
-        "annotations": {
-          "readOnlyHint": false,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
-    },
-    {
-      "name": "customize_automation_default",
-      "description": "Prepare a reviewed copy of one system default as a separate inactive user-owned draft. The source default remains unchanged.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "automation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "expected_state_revision": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
-          },
-          "idempotency_key": {
-            "$ref": "#/properties/automation_id"
-          }
-        },
-        "required": [
-          "automation_id",
-          "expected_state_revision",
-          "idempotency_key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "data": {}
-        },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "execution": {
-        "taskSupport": "forbidden"
-      },
-      "_meta": {
-        "securitySchemes": [
-          {
-            "type": "oauth2",
-            "scopes": [
-              "automations.write"
-            ]
-          }
-        ],
-        "com.thelibrary/authenticated": true
-      },
-      "metadata": {
-        "requiredScope": "automations.write",
-        "annotations": {
-          "readOnlyHint": false,
-          "destructiveHint": false,
-          "idempotentHint": true,
-          "openWorldHint": false
-        },
-        "closedInput": true
-      }
     }
   ],
-  "source_commit": "1f28054dba78e48f1f6809660f79056a41a17e12"
+  "source_commit": "d95640388bd1a7545b962f0def2c5cb038eaa66a"
 }
