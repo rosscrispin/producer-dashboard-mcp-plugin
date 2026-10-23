@@ -1,5 +1,5 @@
 {
-  "release": "1.1.22",
+  "release": "1.1.23",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
@@ -1404,6 +1404,11 @@
             "type": "integer",
             "minimum": 1,
             "maximum": 100
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
           }
         },
         "required": [
@@ -41650,5 +41655,5 @@
       }
     }
   ],
-  "source_commit": "903bc44470dcfa29284e5ecc637497b4362e16af"
+  "source_commit": "884c0469654166e8b2010b0c4571deefbcb417ba"
 }
