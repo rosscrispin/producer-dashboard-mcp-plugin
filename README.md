@@ -52,7 +52,7 @@ Run the dependency-free package check before creating a ZIP or uploading a new v
 node scripts/validate-plugin.mjs
 ```
 
-It checks the listing, review cases, icons, product wording, and the documented 499-tool reference.
+It checks the listing, review cases, icons, product wording, and the documented 505-tool reference.
 
 ## Permissions
 
