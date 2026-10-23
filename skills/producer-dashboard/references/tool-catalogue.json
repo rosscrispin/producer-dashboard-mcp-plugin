@@ -1632,7 +1632,7 @@
     },
     {
       "name": "install_automation",
-      "description": "Prepare installation of one exact released system default version and configuration. Complete the returned trusted review before execution.",
+      "description": "Prepare installation of one exact released system default version and configuration. An existing owner installation is returned unchanged; use the separate update, reset, or customize flows to change it. Complete the returned trusted review before execution.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -42047,5 +42047,5 @@
       }
     }
   ],
-  "source_commit": "d95640388bd1a7545b962f0def2c5cb038eaa66a"
+  "source_commit": "acc028c4943dcc59e01afe8f33ccc175bf52fe52"
 }
