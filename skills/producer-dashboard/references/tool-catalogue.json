@@ -1,5 +1,5 @@
 {
-  "release": "1.1.27",
+  "release": "1.1.28",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
