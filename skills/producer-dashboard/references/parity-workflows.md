@@ -68,6 +68,8 @@ Read the automation catalogue before choosing triggers or effects. Work through 
 
 To edit a published Automation, read its exact state with `get_automation`, call `start_automation_edit` with that `expected_state_revision`, complete the returned trusted review, then execute the saved plan with its original idempotency key. The active version stays unchanged; the result is one normal draft. Re-read the Automation after execution. A stale revision must be inspected again, and an unknown response must be recovered through the original operation before any retry.
 
+For an installed system default, use `preview_automation_default_update` or `preview_automation_default_reset` first. Preserve the returned `impact_hash` and exact `state_revision`; then prepare `apply_automation_default_update` or `reset_automation_default`, complete trusted review, execute the original plan, and read the canonical Automation state. A changed state or preview hash stops the write. Use `customize_automation_default` when the user wants a separate inactive draft; it leaves the system default unchanged and remains idempotent through the original operation key.
+
 Cancel an action plan with its current `expected_version`. Read the original run and operation before a retry. Report pending, failed, paused and partial states accurately. Financial, access and native effects retain their domain confirmation and authority.
 
 ## Public Pages, profile and preferences
