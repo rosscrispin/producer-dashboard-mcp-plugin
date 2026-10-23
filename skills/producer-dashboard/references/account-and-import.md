@@ -1,11 +1,11 @@
 # Account setup and library import
 
-Use this workflow when the user asks to register, connect a new account, or import their music library from chat. Check the current tool catalogue before each stage. An advertised tool does not prove that the account has access or that the installed desktop supports it.
+Use this workflow when the user asks to connect an existing Pro account or import their music library from chat. Check the current tool catalogue before each stage. An advertised tool does not prove that the account has access or that the installed desktop supports it.
 
-## Register and connect
+## Connect an existing Pro account
 
-1. Start the client's normal connection to The Library. Registration happens in the trusted Library sign-in page. If the user has no account, they choose **Create account** and complete Google sign-up or email confirmation. Never ask for a password, verification code, CAPTCHA answer, or session token in chat. The MCP OAuth `/register` endpoint registers an OAuth client; it does not create a Library account.
-2. MCP requires **Pro**. Free registration does not include MCP access. The user can install and sign in to The Library, then upgrade in **Settings → Billing**. Do not purchase a plan or claim payment completion from a link. If the original connection expires during setup, start a fresh connection; keep the account already created.
+1. MCP requires an existing **Pro** account. Account registration is disabled during MCP connection. If the user has no account, direct them to create one through The Library application or website, upgrade there, then start a new connection. Do not start a signup continuation or promise Free MCP access. Never ask for a password, verification code, CAPTCHA answer, or session token in chat. The MCP OAuth `/register` endpoint registers an OAuth client; it does not create a Library account and must remain available to compatible clients.
+2. Start the client's normal connection and sign in to the existing Pro account in the trusted browser page. Free accounts must upgrade in **Settings → Billing** before connecting. Do not purchase a plan or claim payment completion from a link. Start a fresh connection if the original request expires.
 3. Complete the exact OAuth permission review. Do not change account policies, grant extra scopes, or accept legal terms for the user. The user enables the necessary MCP access permissions in the app. A failed entitlement, policy or grant check is a blocked step, not an empty library.
 
 ## Connect the desktop
@@ -30,12 +30,13 @@ The Library desktop must be installed, open, signed in to the same account, and 
 - The hosted MCP server cannot inspect the user's disk without the authorized desktop bridge.
 - Selected-file import and review responses are bounded to 250 entries. The folder scanner has a 5,000-file cap, and import review has no cursor contract. Follow the returned limits and completeness markers. Do not silently import only the first part of a large library or call a partial review complete.
 - Chat can present and select the grouping choices supplied by the native review. It cannot assume arbitrary regrouping or renaming is supported.
-- Account creation, Pro purchase, legal acceptance, device pairing and native file selection each have their own user action. None is implied by completion of another step.
+- Account creation and Pro purchase happen outside MCP. Legal acceptance, device pairing and native file selection each have their own user action. None is implied by completion of another step.
 - Source support, deployed tools and a successful import on the user's installed app are separate evidence. Report an unavailable tool, denied scope, incompatible build, stale binding or failed operation accurately.
 
 ## Compound acceptance prompts
 
-- “I am new to The Library. Help me create an account, connect Pro, and import a folder of music.” Expect trusted signup, explicit Pro gate, exact consent, native pairing and selection, reviewed import and signed readback.
+- “I have a Pro account. Connect it and import a folder of music.” Expect existing-account sign-in, exact consent, native pairing and selection, reviewed import and signed readback.
+- “Register an account through MCP.” Expect clear application or website setup guidance; no registration tool or MCP signup continuation.
 - “Show the proposed Tracks and duplicates before importing anything.” Expect a bounded readable review and no import effect.
 - “Use these offered grouping choices, import once, then create a playlist from the successful Tracks.” Expect preserved IDs, revisions and keys; exclude failed or unresolved imports from the playlist.
 - “The import timed out. Try again.” Expect original-operation readback before any new execution.

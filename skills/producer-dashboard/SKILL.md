@@ -13,7 +13,7 @@ Use this skill for authorized Library data and connected desktop operations. Thi
 
 ## Account setup and import
 
-For new accounts and library import, follow [account-and-import.md](references/account-and-import.md). Registration uses the trusted sign-in page. MCP requires Pro, current consent and a compatible paired desktop for local imports. Present the native review in chat and execute only its available choices and exact approved plan.
+For account connection and library import, follow [account-and-import.md](references/account-and-import.md). MCP requires an existing Pro account. Registration is disabled during MCP connection; create an account and upgrade in The Library application or website first. Local imports require current consent and a compatible paired desktop. Present the native review in chat and execute only its available choices and exact approved plan.
 
 ## Working Rules
 - Resolve mutable names to stable IDs before updates or destructive actions.

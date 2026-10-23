@@ -28,7 +28,7 @@ On first use, Claude Code will open your browser to sign in with your The Librar
 
 ## Account setup and import
 
-Create an account through the trusted Library sign-in page during connection. MCP requires Pro. A new Free account must upgrade in The Library before connecting. Local import also requires the installed app, device consent and native file selection. See the [account and import workflow](skills/producer-dashboard/references/account-and-import.md).
+MCP connects existing Pro accounts. Registration is not available during MCP connection. Create an account and upgrade through The Library application or website before connecting. Local import also requires the installed app, device consent and native file selection. See the [account and import workflow](skills/producer-dashboard/references/account-and-import.md).
 
 ## What you can ask
 
