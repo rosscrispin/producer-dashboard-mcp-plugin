@@ -1,5 +1,5 @@
 {
-  "release": "1.1.23",
+  "release": "1.1.24",
   "status": "Source catalogue. Deployment and account acceptance need separate evidence.",
   "scopes": [
     "library.read",
@@ -1688,6 +1688,71 @@
         },
         "required": [
           "content",
+          "idempotency_key"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "automations.write"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "automations.write",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "start_automation_edit",
+      "description": "Prepare a reviewed edit draft from the exact active published Automation revision. The active version remains unchanged and an existing draft is reused.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "automation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expected_state_revision": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "idempotency_key": {
+            "$ref": "#/properties/automation_id"
+          }
+        },
+        "required": [
+          "automation_id",
+          "expected_state_revision",
           "idempotency_key"
         ],
         "additionalProperties": false,
@@ -41655,5 +41720,5 @@
       }
     }
   ],
-  "source_commit": "2560fc0f02ad99f3a76c537920dd18611c2ec502"
+  "source_commit": "a647603027e3c2a0b63ea5bf259d9908c8f539c8"
 }

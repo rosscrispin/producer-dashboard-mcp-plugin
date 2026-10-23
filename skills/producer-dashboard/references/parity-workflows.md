@@ -66,6 +66,8 @@ Use the updated native app with a bounded backup schedule read. An overdue read 
 
 Read the automation catalogue before choosing triggers or effects. Work through draft, version, publish and activation. Keep draft versions and the frozen effect selection. Dry tests and live tests are distinct; a dry result does not establish delivery or a file effect.
 
+To edit a published Automation, read its exact state with `get_automation`, call `start_automation_edit` with that `expected_state_revision`, complete the returned trusted review, then execute the saved plan with its original idempotency key. The active version stays unchanged; the result is one normal draft. Re-read the Automation after execution. A stale revision must be inspected again, and an unknown response must be recovered through the original operation before any retry.
+
 Cancel an action plan with its current `expected_version`. Read the original run and operation before a retry. Report pending, failed, paused and partial states accurately. Financial, access and native effects retain their domain confirmation and authority.
 
 ## Public Pages, profile and preferences
