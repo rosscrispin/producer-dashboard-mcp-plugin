@@ -76,6 +76,8 @@ For an installed system default, use `preview_automation_default_update` or `pre
 
 Cancel an action plan with its current `expected_version`. Read the original run and operation before a retry. Report pending, failed, paused and partial states accurately. Financial, access and native effects retain their domain confirmation and authority.
 
+For product-event runs, read `run.trigger_input.event_type` and `run.trigger_input.resource_ids` to identify the triggering records. The run's `immutable_record_ids` identify its Track execution scope; a To-Do or comment notification can have an empty Track scope. A manual step's `handoff` identifies the owning app surface and immutable targets. It does not prove that the user completed that step.
+
 ## Public Pages, profile and preferences
 
 Edit private drafts with exact versions. Publication uses the canonical publishing validator and a verified published projection. Verify the public result separately from the draft save. Do not expose private or unpublished content through a public handoff.
