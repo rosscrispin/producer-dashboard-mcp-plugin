@@ -78,6 +78,8 @@ Cancel an action plan with its current `expected_version`. Read the original run
 
 For product-event runs, read `run.trigger_input.event_type` and `run.trigger_input.resource_ids` to identify the triggering records. The run's `immutable_record_ids` identify its Track execution scope; a To-Do or comment notification can have an empty Track scope. A manual step's `handoff` identifies the owning app surface and immutable targets. It does not prove that the user completed that step.
 
+The Library allows up to 50 active Automations. Drafts and paused Automations do not use an active slot. If `automation_limit_reached` is returned, inspect the current states. Pause an existing Automation only when the user's instruction authorizes that choice.
+
 ## Public Pages, profile and preferences
 
 Edit private drafts with exact versions. Publication uses the canonical publishing validator and a verified published projection. Verify the public result separately from the draft save. Do not expose private or unpublished content through a public handoff.
