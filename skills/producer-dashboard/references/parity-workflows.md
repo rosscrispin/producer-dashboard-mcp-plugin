@@ -62,6 +62,14 @@ Preview restore against current inventory and versions. Keep the exact restore p
 
 Use the updated native app with a bounded backup schedule read. An overdue read returns `expired`, `needs_attention`, `command_expired` and no schedule result. A signed result-free expiry failure records failure only. Completed receipts remain available for recovery. Backup mutations keep their existing unknown-outcome rules; read expiry is not permission to repeat a backup write. A native timeout cannot establish the current schedule. The folder chooser, completed signed receipt and physical backup checks remain required for later effects.
 
+## To-Dos
+
+Preserve each immutable task ID and its returned `todo_source`. The app and `list_todos` include canonical tasks and legacy tasks created through Chat or Automations. Follow the returned cursor before claiming complete task coverage. A duplicate source ID is an error; do not choose a row by its text or create a replacement task to bypass the conflict.
+
+Legacy group tasks retain timestamp deadlines and priority. They do not support Bucket moves, workflow, roster collaborator assignment or file feedback attachment. Canonical tasks support their standard task fields and date-only deadlines. Use the capability error and current schema to select a supported field. A failed read does not establish that a field is empty.
+
+Automation `read.todo` can read both sources for owned Track tasks. The Automation mutation actions require one storage source per action. Prepare separate actions when the selected IDs span both sources. Canonical Automation task updates accept `values.title` as task content, date-only `YYYY-MM-DD` deadlines and registered-user assignment. They do not store priority or `completed_at`. Older file-linked canonical tasks keep their original stored scope. Global and Bucket tasks remain outside these Automation actions; use the standard To-Do tools. Repeated completion and reopen return `no_change`.
+
 ## Automations
 
 Use `export_automation_runs` for audited run-history exports. Supply an immutable request UUID and the format. An exact `run_id` accepts JSON. A collection uses `automation_id` with the existing run filters and a page size of at most 100. Preserve all filters and page size when following `next_cursor`. Report a complete history only after `complete` is true. Export content does not execute, cancel, retry, or undo a run.
