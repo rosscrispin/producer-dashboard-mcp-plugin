@@ -19,7 +19,6 @@
     "exports.read",
     "bulk.write",
     "destructive.write",
-    "analysis.write",
     "organization.write",
     "files.read",
     "files.write",
@@ -35,6 +34,7 @@
     "royalties.read",
     "royalties.write",
     "history.write",
+    "analysis.write",
     "backups.read",
     "backups.write",
     "public_pages.read",
@@ -1469,6 +1469,112 @@
         },
         "required": [
           "run_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {}
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "automations.read"
+            ]
+          }
+        ],
+        "com.thelibrary/authenticated": true
+      },
+      "metadata": {
+        "requiredScope": "automations.read",
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "closedInput": true
+      }
+    },
+    {
+      "name": "export_automation_runs",
+      "description": "Export owner-scoped Automation history through the audited app service. Supply a request UUID and explicit format. Use run_id with JSON for one exact redacted run, or automation_id with bounded filters and CSV/JSON for one history page. Follow next_cursor with unchanged filters and page size until complete is true; a page is not the whole history. This does not execute, retry, cancel, or undo a run.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "automation_id": {
+            "$ref": "#/properties/run_id"
+          },
+          "request_id": {
+            "$ref": "#/properties/run_id"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "csv",
+              "json"
+            ]
+          },
+          "run_type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "status": {
+            "$ref": "#/properties/run_type"
+          },
+          "actor_user_id": {
+            "$ref": "#/properties/run_id"
+          },
+          "launch_source": {
+            "$ref": "#/properties/run_type"
+          },
+          "action": {
+            "$ref": "#/properties/run_type"
+          },
+          "affected_record_id": {
+            "$ref": "#/properties/run_id"
+          },
+          "from": {
+            "$ref": "#/properties/run_type"
+          },
+          "to": {
+            "$ref": "#/properties/run_type"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "required": [
+          "request_id",
+          "format"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -23991,7 +24097,7 @@
     },
     {
       "name": "batch_update_songs",
-      "description": "Update multiple songs at once. Uses the bulk update endpoint \u2014 much faster than calling update_song in a loop.",
+      "description": "Update multiple songs at once. Uses the bulk update endpoint — much faster than calling update_song in a loop.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -25583,7 +25689,7 @@
     },
     {
       "name": "get_share_status",
-      "description": "Check the sharing status of a song's collaborators \u2014 who has been shared with, pending invites, accepted, etc.",
+      "description": "Check the sharing status of a song's collaborators — who has been shared with, pending invites, accepted, etc.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -34968,7 +35074,7 @@
     },
     {
       "name": "create_share_page",
-      "description": "Create a share page (playlist link) for selected songs. Provide track_group_ids directly, OR set bucket_id or stages to auto-select songs. Optionally protect with a password (4\u2013128 chars) \u2014 recipients will be asked for it before they can view or download. Requires the sharing permission; filtered discovery also requires Library read access. The bounded selection supports up to 250 Tracks.",
+      "description": "Create a share page (playlist link) for selected songs. Provide track_group_ids directly, OR set bucket_id or stages to auto-select songs. Optionally protect with a password (4–128 chars) — recipients will be asked for it before they can view or download. Requires the sharing permission; filtered discovery also requires Library read access. The bounded selection supports up to 250 Tracks.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -35087,7 +35193,7 @@
             "type": "string",
             "minLength": 4,
             "maxLength": 128,
-            "description": "Optional password (4\u2013128 chars). When set, recipients must enter this to view or download the share. Password is hashed server-side \u2014 never returned in responses."
+            "description": "Optional password (4–128 chars). When set, recipients must enter this to view or download the share. Password is hashed server-side — never returned in responses."
           }
         },
         "additionalProperties": false,
@@ -42047,5 +42153,5 @@
       }
     }
   ],
-  "source_commit": "bf89a65aac24e75ea64cbfb9c973d26d9ab359d7"
+  "source_commit": "1d58bdafbda3e7d42e6e4789fce5077adb49d2cc"
 }

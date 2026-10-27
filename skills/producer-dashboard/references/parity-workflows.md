@@ -64,6 +64,8 @@ Use the updated native app with a bounded backup schedule read. An overdue read 
 
 ## Automations
 
+Use `export_automation_runs` for audited run-history exports. Supply an immutable request UUID and the format. An exact `run_id` accepts JSON. A collection uses `automation_id` with the existing run filters and a page size of at most 100. Preserve all filters and page size when following `next_cursor`. Report a complete history only after `complete` is true. Export content does not execute, cancel, retry, or undo a run.
+
 Read the automation catalogue before choosing triggers or effects. Work through draft, version, publish and activation. Keep draft versions and the frozen effect selection. Dry tests and live tests are distinct; a dry result does not establish delivery or a file effect.
 
 `get_automation_action_operation` returns the common operation envelope. Its terminal success status is `completed`. Its `result` contains the Automation receipt, whose successful status is `committed`. The receipt's own `result` contains the effect data. Keep the operation UUID separate from the Automation UUID. A system-default installation returns the Automation UUID at `operation.result.result.id`. Draft, template, and customization results return it at `operation.result.result.definition.id`. Verify that record with `get_automation` before the next change. A prepared test returns its frozen plan at `operation.result.result.test_plan`; retain its `plan_id` and `impact_hash`.
